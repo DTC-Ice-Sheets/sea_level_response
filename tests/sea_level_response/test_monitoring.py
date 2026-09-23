@@ -3,11 +3,11 @@
 import logging
 from unittest.mock import patch
 
-from dtc_python_template.monitoring import setup_logging
+from sea_level_response.monitoring import setup_logging
 
 
 def test_setup_logging() -> None:
-    with patch("dtc_python_template.monitoring.logging.getLogger") as mock_get_logger:
+    with patch("sea_level_response.monitoring.logging.getLogger") as mock_get_logger:
         mock_logger = mock_get_logger.return_value
         setup_logging()
 

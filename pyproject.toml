@@ -3,14 +3,14 @@ requires = ["poetry>=1.5"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "dtc_python_template"
-version = "0.0.64"
-description = "Template repository for DTC Ice Sheets Python Packages."
+name = "sea_level_response"
+version = "0.0.0"
+description = "DTC-IS module to calculate sea-level changes arising from water mass inputs to the oceans."
 authors = ["Earthwave Ltd <info@earthwave.co.uk>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/dtc-ice-sheets/dtc_python_template"
-packages = [{ include = "dtc_python_template", from = "src" }]
+homepage = "https://github.com/dtc-ice-sheets/sea_level_response"
+packages = [{ include = "sea_level_response", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
@@ -91,8 +91,8 @@ convention = "numpy" # Accepts: "google", "numpy", or "pep257"
 skips = ['*_test.py', '*/test_*.py']
 
 [tool.pytest.ini_options]
-addopts = "--disable-warnings --cov dtc_python_template --cov-fail-under=80"
-typeguard-packages = """dtc_python_template"""
+addopts = "--disable-warnings --cov sea_level_response --cov-fail-under=80"
+typeguard-packages = """sea_level_response"""
 typeguard-debug-instrumentation = true
 typeguard-forward-ref-policy = "ERROR"
 typeguard-collection-check-strategy = "ALL_ITEMS"

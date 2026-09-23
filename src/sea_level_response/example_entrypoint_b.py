@@ -7,8 +7,8 @@ import logging
 
 import cyclopts
 
-from dtc_python_template.example_sub_package_b.example_module_b import WorseCalculator
-from dtc_python_template.monitoring import setup_logging
+from sea_level_response.example_sub_package_b.example_module_b import WorseCalculator
+from sea_level_response.monitoring import setup_logging
 
 logger = logging.getLogger(__name__)
 

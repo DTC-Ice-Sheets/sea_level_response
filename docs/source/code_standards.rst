@@ -86,8 +86,8 @@ allows us to record errors, warnings, or debugging details in a consistent and c
 statements, logging provides more flexibility and can be easily directed to different outputs and filtered based on
 severity levels.
 
-The DTC Python template provides a core logging configuration for the entire package in ``src/dtc_python_template/monitoring.py::setup_logging()``.
-This is run before any other package code (see ``src/dtc_python_template/__main__.py``). This ensures that all logs
+The DTC Python template provides a core logging configuration for the entire package in ``src/sea_level_response/monitoring.py::setup_logging()``.
+This is run before any other package code (see ``src/sea_level_response/__main__.py``). This ensures that all logs
 follow a consistent format and are appropriately handled.
 
 Here is an example of how to define and use a logger in your Python file:
@@ -125,8 +125,8 @@ coverage in DTC to ensure that a sufficient portion of your codebase is being te
 whenever you run the ``pytest`` command in a correctly configured poetry environment.
 
 All unit tests should be placed in the ``tests/`` directory. The location and naming of the test files should mirror
-that of the files they are testing. For example, if your file is ``src/dtc_python_template/example_subpackage/example_module_b.py``,
-the corresponding test file should be ``tests/dtc_python_template/example_sub_package/test_example_module_b.py``.
+that of the files they are testing. For example, if your file is ``src/sea_level_response/example_subpackage/example_module_b.py``,
+the corresponding test file should be ``tests/sea_level_response/example_sub_package/test_example_module_b.py``.
 
 Unit tests often require ``mocking`` of complex objects or external dependencies, replacing them under test with
 controlled, simplified versions that simulate specific behaviors. Please see `unittest.mock library <https://docs.python.org/3/library/unittest.mock.html>`__

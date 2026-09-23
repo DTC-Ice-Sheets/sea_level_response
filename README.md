@@ -1,11 +1,11 @@
-![example workflow](https://github.com/dtc-ice-sheets/dtc_python_template/actions/workflows/dtc_python_template_test.yml/badge.svg)
-![example workflow](https://github.com/dtc-ice-sheets/dtc_python_template/actions/workflows/dtc_python_template_deploy.yml/badge.svg)
+![example workflow](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_test.yml/badge.svg)
+![example workflow](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_deploy.yml/badge.svg)
 
-# dtc_python_template
+# sea_level_response
 
 This repository serves as a template for the creation of new DTC Python Packages.
 
-**Please familiarise yourself with the [DTC Ice Sheets Development Guide](https://dtc-ice-sheets.github.io/dtc_python_template/) before proceeding.**
+**Please familiarise yourself with the [DTC Ice Sheets Development Guide](https://dtc-ice-sheets.github.io/sea_level_response/) before proceeding.**
 
 ## Installation for Use
 
@@ -20,25 +20,25 @@ organisation.
 Then, to download and install the latest version from the DTC Ice Sheets GitHub repository:
 
 ```
-pip install git+https://github.com/dtc-ice-sheets/dtc_python_template.git
+pip install git+https://github.com/dtc-ice-sheets/sea_level_response.git
 ```
 
 You can then use this package as follows (obviously you will need to edit this section after copying this template):
 
 ```
-python -m dtc_python_template.example_entrypoint_a --integer_a <number_a> --integer_b <number_b>
+python -m sea_level_response.example_entrypoint_a --integer_a <number_a> --integer_b <number_b>
 ```
 
 or
 
 ```
-python -m dtc_python_template.example_entrypoint_b --integer_a <number_a> --integer_b <number_b>
+python -m sea_level_response.example_entrypoint_b --integer_a <number_a> --integer_b <number_b>
 ```
 
 For more help, run:
 
 ```
-python -m dtc_python_template.example_entrypoint_a -h
+python -m sea_level_response.example_entrypoint_a -h
 ```
 
 ## Installation for Development
@@ -46,8 +46,8 @@ python -m dtc_python_template.example_entrypoint_a -h
 To develop this package, please clone the repository:
 
 ```
-git clone https://github.com/dtc-ice-sheets/dtc_python_template.git
-cd dtc_python_template
+git clone https://github.com/dtc-ice-sheets/sea_level_response.git
+cd sea_level_response
 ```
 
 This project uses poetry to manage package dependencies and virtual environments.

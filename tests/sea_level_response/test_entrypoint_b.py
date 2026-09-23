@@ -7,19 +7,18 @@ from unittest.mock import patch
 import pytest
 
 
-@patch.object(sys, "argv", ["dtc_python_template", "--integer_a", "4", "--integer_b", "5"])
+@patch.object(sys, "argv", ["sea_level_response", "--integer_a", "4", "--integer_b", "5"])
 def test_main(caplog: pytest.LogCaptureFixture) -> None:
-    """Test main.
+    """Test main for example_entrypoint_b.
 
     Parameters
     ----------
     caplog : LogCaptureFixture
         The caplog fixture
-
     """
-    from dtc_python_template.example_entrypoint_a import app
+    from sea_level_response.example_entrypoint_b import app
 
     with caplog.at_level(logging.INFO):
         app(result_action="return_value")
-        assert "Bad Calculator Output" in caplog.records[0].message
+        assert "Worse Calculator Output" in caplog.records[0].message
         assert "9" in caplog.records[0].message

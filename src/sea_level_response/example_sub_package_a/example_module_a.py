@@ -1,4 +1,4 @@
-"""Example for dtc_python_template."""
+"""Example for sea_level_response."""
 
 import numpy as np
 from numpy.typing import NDArray

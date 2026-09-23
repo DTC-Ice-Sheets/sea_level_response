@@ -2,7 +2,7 @@
 Adapting the DTC template for your module
 ------------------------------------------
 Each DTC Python module should have an associated repository within the `DTC Ice Sheets GitHub organisation <https://github.com/DTC-Ice-Sheets>`__.
-Each such repository should be created from the `template provided by the dev team <https://github.com/DTC-Ice-Sheets/dtc_python_template>`__.
+Each such repository should be created from the `template provided by the dev team <https://github.com/DTC-Ice-Sheets/sea_level_response>`__.
 This section explains how to adapt this template for your module.
 
 If you are unfamiliar with GitHub, git, or CI/CD, please ask one of the members of the `DTC engineering team <https://github.com/orgs/DTC-Ice-Sheets/teams/engineering>`__
@@ -10,7 +10,7 @@ to help you set up your repository!
 
 Copy the template
 ------------------
-To start, navigate to the `DTC Python template repository <https://github.com/DTC-Ice-Sheets/dtc_python_template>`__
+To start, navigate to the `DTC Python template repository <https://github.com/DTC-Ice-Sheets/sea_level_response>`__
 and click ``Use This Template`` in the top right corner.
 
 Please provide a repository name (consider this carefully!) as well as a description. If your repository name
@@ -23,9 +23,9 @@ Update template code and trigger first successful workflow
 The next thing you should do is clone the repository to your computer and make a single commit to a **new branch** in
 which you have:
 
-* changed ``dtc_python_template`` to ``your_new_package`` everywhere in the code
-* changed ``dtc-python-template`` to ``your-new-package`` everywhere in the code
-* renamed files and folder that include ``dtc_python_template`` to ``your_new_package`` (remember to look in the
+* changed ``sea_level_response`` to ``your_new_package`` everywhere in the code
+* changed ``sea_level_response`` to ``your-new-package`` everywhere in the code
+* renamed files and folder that include ``sea_level_response`` to ``your_new_package`` (remember to look in the
   ``.github/workflows`` folder as well!)
 * updated the ``[tool.poetry]`` section of the ``pyproject.toml`` file:
 
@@ -41,7 +41,7 @@ Look under the "actions" tab for a green tick. if you see an orange circle, wait
 tick (you may need to refresh the page).
 
 If the chain completes successfully, you're ready to proceed. If not, go back and make sure you've updated all instances
-of ``dtc_python_template`` and ``dtc-python-template``, including for file names and folder names, and push again.
+of ``sea_level_response`` and ``sea_level_response``, including for file names and folder names, and push again.
 
 Configure repository settings
 -----------------------------
