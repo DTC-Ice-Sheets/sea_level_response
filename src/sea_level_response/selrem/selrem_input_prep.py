@@ -45,7 +45,7 @@ def _assign_latlon_coords(da: xr.DataArray, crs: CRS) -> xr.DataArray:
         return da.assign_coords(lat=lat, lon=lon)
 
     transformer = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
-    x_2d, y_2d = np.meshgrid(da.x.values, da.y.values)
+    x_2d, y_2d = np.meshgrid(da.x.to_numpy(), da.y.to_numpy())
     lon_2d, lat_2d = transformer.transform(x_2d, y_2d)
     return da.assign_coords(
         lat=(("y", "x"), lat_2d),
@@ -69,7 +69,7 @@ def to_annual(da: xr.DataArray, is_uncertainty: bool = False) -> xr.DataArray:
     xr.DataArray
         Annually resampled DataArray; same as input if already at annual resolution.
     """
-    time_years = da.time.dt.year.values
+    time_years = da.time.dt.year.to_numpy()
     if len(time_years) > len(np.unique(time_years)):
         if is_uncertainty:
             resampled = (da**2).resample(time="1YE")
@@ -102,6 +102,11 @@ def prepare_gridded_ds_for_selrem(
     -------
     xr.Dataset
         Dataset with (time, point) dimensions and y = latitude, x = longitude coordinate variables.
+
+    Raises
+    ------
+    ValueError
+        If the dataset does not have the required dimensions or variables, or if the coarsen_factor is invalid.
     """
     crs = get_dataset_crs(ds)
     if crs is None:
@@ -118,8 +123,8 @@ def prepare_gridded_ds_for_selrem(
     mb_da = to_annual(ds[MASS_BALANCE_COL_NAME])
 
     if coarsen_factor > 1:
-        _valid = mb_da.notnull().coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum()
-        mb_da = mb_da.coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum().where(_valid > 0)
+        valid = mb_da.notnull().coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum()
+        mb_da = mb_da.coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum().where(valid > 0)
     elif coarsen_factor < 1:
         logger.warning("coarsen_factor < 1 is not supported; ignoring and using coarsen_factor=1.")
         coarsen_factor = 1
@@ -131,28 +136,27 @@ def prepare_gridded_ds_for_selrem(
         err_da = to_annual(ds[MASS_BALANCE_ERROR_COL_NAME], is_uncertainty=True)
         if coarsen_factor > 1:
             # use root sum of squares (RSS) for aggregation of uncertainties - is this appropriate for mass balance err?
-            _err_sq = err_da**2
-            _err_valid = _err_sq.notnull().coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum()
+            err_sq = err_da**2
+            err_valid = err_sq.notnull().coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum()
             err_da = np.sqrt(
-                _err_sq.coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum().where(_err_valid > 0)
+                err_sq.coarsen(y=coarsen_factor, x=coarsen_factor, boundary="trim").sum().where(err_valid > 0)
             )
         err_da = _assign_latlon_coords(err_da, crs)
         err_da_flat = err_da.stack(point=("y", "x")).sel(point=mb_da_flat.point).compute()
-        err_values = err_da_flat.values
+        err_values = err_da_flat.to_numpy()
     else:
-        err_values = np.full_like(mb_da_flat.values, np.nan)
+        err_values = np.full_like(mb_da_flat.to_numpy(), np.nan)
 
     ds = xr.Dataset(
         {
-            MASS_BALANCE_COL_NAME: (("time", "point"), mb_da_flat.values),
+            MASS_BALANCE_COL_NAME: (("time", "point"), mb_da_flat.to_numpy()),
             MASS_BALANCE_ERROR_COL_NAME: (("time", "point"), err_values),
-            "y": ("point", mb_da_flat.lat.values),
-            "x": ("point", mb_da_flat.lon.values),
+            "y": ("point", mb_da_flat.lat.to_numpy()),
+            "x": ("point", mb_da_flat.lon.to_numpy()),
         },
         coords={
-            "time": mb_da_flat.time.values,
+            "time": mb_da_flat.time.to_numpy(),
             "point": np.arange(mb_da_flat.sizes["point"]),
         },
     )
-    ds = ds.rio.write_crs("EPSG:4326")
-    return ds
+    return ds.rio.write_crs("EPSG:4326")

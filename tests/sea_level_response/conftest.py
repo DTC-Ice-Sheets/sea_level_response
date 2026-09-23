@@ -46,6 +46,11 @@ def invalid_geozarr_path(tmp_path: Path) -> Path:
     ----------
     tmp_path : Path
         Temporary path provided by pytest.
+
+    Returns
+    -------
+    Path
+        Path to the non-existent GeoZarr store directory.
     """
     return tmp_path / "non_existent_file.zarr"
 
@@ -185,7 +190,7 @@ def realistic_annual_slr_dataset() -> xr.Dataset:
     times = pd.date_range("2020-01-01", periods=n_times, freq="YS")
 
     # Create 3D grids
-    lon_grid, lat_grid, time_idx = np.meshgrid(lons, lats, np.arange(n_times), indexing="ij")
+    _, lat_grid, time_idx = np.meshgrid(lons, lats, np.arange(n_times), indexing="ij")
 
     # Realistic SLR patterns (mm/yr)
     # ndot (absolute SLR): varies with distance from ice sheets, ~0-5 mm/yr

@@ -30,7 +30,7 @@ def test_load_selrem_parameters() -> None:
     print("lashdah")
 
     with patch("sea_level_response.selrem.selrem_helpers.Path.open", mock_open(read_data=json.dumps(fake_json_data))):
-        ndot_fit, udot_fit, ndot_unc, udot_unc = load_selrem_parameters()
+        ndot_fit, _, _, _ = load_selrem_parameters()
 
     assert isinstance(ndot_fit, np.ndarray)
     assert ndot_fit.shape == (1, 2)
@@ -44,7 +44,7 @@ def test_load_ocean_mask() -> None:
     )
 
     with patch("xarray.open_dataset", return_value=fake_ds):
-        ocean_mask, lons, lats = load_ocean_mask()
+        ocean_mask, _, _ = load_ocean_mask()
 
     assert ocean_mask.shape == (2, 2)
 
@@ -81,7 +81,7 @@ def test_compute_mean_with_realistic_vmb_data(large_vmb_dataset: xr.Dataset) -> 
     # Verify all values are finite
     from sea_level_response.config import MASS_BALANCE_COL_NAME
 
-    assert np.all(np.isfinite(result[MASS_BALANCE_COL_NAME].values))
+    assert np.all(np.isfinite(result[MASS_BALANCE_COL_NAME].to_numpy()))
 
 
 def test_preprocess_location_with_realistic_annual_slr(realistic_annual_slr_dataset) -> None:
@@ -144,4 +144,4 @@ def test_compute_mean_mass_balance_over_time_window() -> None:
 
     result = compute_mean_mass_balance_over_time_window(ds)
     assert "time" not in result.dims
-    np.testing.assert_allclose(result[MASS_BALANCE_COL_NAME].values[0], 3.0)
+    np.testing.assert_allclose(result[MASS_BALANCE_COL_NAME].to_numpy()[0], 3.0)

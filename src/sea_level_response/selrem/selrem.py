@@ -27,19 +27,7 @@ def run_emulator(
     udot_unc: np.ndarray,
     target_res: float = 0.5,
     compute_res: float = 5.0,
-) -> tuple[
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    float,
-    float,
-    np.ndarray,
-    np.ndarray,
-]:
+) -> tuple:
     """
     Compute the necessary parameters for the emulator.
 
@@ -126,11 +114,11 @@ def run_emulator(
         mass_arr = np.array(loading_points["Mass(Gt)"], dtype=float)
         mass_err_arr = np.array(loading_points.get("Mass_err(Gt)", np.zeros_like(mass_arr)), dtype=float)
     else:  # DataFrame
-        lat_arr = np.radians(loading_points["y"].values.astype(float))
-        lon_arr = np.radians(loading_points["x"].values.astype(float))
-        mass_arr = loading_points["Mass(Gt)"].values.astype(float)
+        lat_arr = np.radians(loading_points["y"].to_numpy().astype(float))
+        lon_arr = np.radians(loading_points["x"].to_numpy().astype(float))
+        mass_arr = loading_points["Mass(Gt)"].to_numpy().astype(float)
         mass_err_arr = (
-            loading_points["Mass_err(Gt)"].values.astype(float)
+            loading_points["Mass_err(Gt)"].to_numpy().astype(float)
             if "Mass_err(Gt)" in loading_points
             else np.zeros_like(mass_arr)
         )
@@ -253,9 +241,9 @@ def _prepare_vmb_points(
     """
     if "time" in ds.dims:
         ds = compute_mean_mass_balance_over_time_window(ds)
-    lat = ds["y"].values
-    lon = ds["x"].values
-    mass = ds[MASS_BALANCE_COL_NAME].values * scale_factor  # Already mean over selected years
+    lat = ds["y"].to_numpy()
+    lon = ds["x"].to_numpy()
+    mass = ds[MASS_BALANCE_COL_NAME].to_numpy() * scale_factor  # Already mean over selected years
     # Convert kg to Gt if needed (assuming VMB is in kg)
     mass_gt = mass / 1e12
     points = {"y": lat, "x": lon, "Mass(Gt)": mass_gt}
@@ -283,22 +271,22 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0) -> xr.Dataset:
     """
     # Load parameters and mask
     ndot_fit, udot_fit, ndot_unc, udot_unc = load_selrem_parameters()
-    ocean_mask, mask_lons, mask_lats = load_ocean_mask()
+    ocean_mask, _, _ = load_ocean_mask()
 
-    years = pd.to_datetime(ds["time"].values).year
+    years = pd.to_datetime(ds["time"].to_numpy()).year
     output_data = []
     lons_t, lats_t = None, None
 
     for i, _ in enumerate(years):
         # Extract VMB for this year
-        vmb_year = ds[MASS_BALANCE_COL_NAME].isel(time=i).values
+        vmb_year = ds[MASS_BALANCE_COL_NAME].isel(time=i).to_numpy()
         vmb_er_year = (
-            ds[MASS_BALANCE_ERROR_COL_NAME].isel(time=i).values
+            ds[MASS_BALANCE_ERROR_COL_NAME].isel(time=i).to_numpy()
             if MASS_BALANCE_ERROR_COL_NAME in ds
             else np.zeros_like(vmb_year)
         )
-        lat = ds["y"].values
-        lon = ds["x"].values
+        lat = ds["y"].to_numpy()
+        lon = ds["x"].to_numpy()
 
         # Build a temporary dataset for the emulator
         ds_year = xr.Dataset(
@@ -308,7 +296,7 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0) -> xr.Dataset:
                 "y": (("point",), lat),
                 "x": (("point",), lon),
             },
-            coords={"point": ds["point"].values},
+            coords={"point": ds["point"].to_numpy()},
         )
 
         # Prepare points
@@ -333,17 +321,15 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0) -> xr.Dataset:
 
     # Stack results into xarray
     data_vars = {}
-    for key in output_data[0].keys():
+    for key in output_data[0]:
         # shape: (year, lon, lat)
         stacked = np.stack([d[key] for d in output_data], axis=0)
         data_vars[key] = (("time", "x", "y"), stacked)
 
-    xr_out = xr.Dataset(
+    return xr.Dataset(
         data_vars=data_vars,
         coords={"time": np.array([np.datetime64(f"{y}-01-01") for y in years]), "x": lons_t, "y": lats_t},
     )
-
-    return xr_out
 
 
 def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0) -> xr.Dataset:

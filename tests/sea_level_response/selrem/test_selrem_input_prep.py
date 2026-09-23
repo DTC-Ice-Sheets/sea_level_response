@@ -29,8 +29,7 @@ def example_mass_balance_ds() -> xr.Dataset:
         {MASS_BALANCE_COL_NAME: (("time", "y", "x"), data)},
         coords={"time": times, "y": y_vals, "x": x_vals},
     )
-    ds = ds.rio.write_crs(CRS.from_epsg(4326))
-    return ds
+    return ds.rio.write_crs(CRS.from_epsg(4326))
 
 
 def test_assign_latlon_geographic_crs():
@@ -44,8 +43,8 @@ def test_assign_latlon_geographic_crs():
         coords={"y": y_vals, "x": x_vals},
     )
     result = _assign_latlon_coords(da, crs)
-    np.testing.assert_equal(result.coords["lat"].values, np.array([[68.0, 68.0], [69.0, 69.0]]))
-    np.testing.assert_equal(result.coords["lon"].values, np.array([[-50.0, -49.0], [-50.0, -49.0]]))
+    np.testing.assert_equal(result.coords["lat"].to_numpy(), np.array([[68.0, 68.0], [69.0, 69.0]]))
+    np.testing.assert_equal(result.coords["lon"].to_numpy(), np.array([[-50.0, -49.0], [-50.0, -49.0]]))
 
 
 def test_assign_latlon_projected_crs_shape():
@@ -70,7 +69,7 @@ def test_to_annual_already_annual():
     da = xr.DataArray(np.arange(5.0), dims=("time",), coords={"time": times})
     result = to_annual(da)
     assert result.sizes["time"] == 5
-    np.testing.assert_array_equal(result.values, da.values)
+    np.testing.assert_array_equal(result.to_numpy(), da.to_numpy())
 
 
 def test_to_annual_monthly_data():
@@ -80,7 +79,7 @@ def test_to_annual_monthly_data():
     da = xr.DataArray(values, dims=("time",), coords={"time": times})
     result = to_annual(da)
     assert result.sizes["time"] == 2
-    np.testing.assert_array_equal(result.values, [1.0, 1.0])
+    np.testing.assert_array_equal(result.to_numpy(), [1.0, 1.0])
 
 
 def test_to_annual_monthly_varying_values():
@@ -90,7 +89,7 @@ def test_to_annual_monthly_varying_values():
     da = xr.DataArray(values, dims=("time",), coords={"time": times})
     result = to_annual(da)
     assert result.sizes["time"] == 1
-    np.testing.assert_array_equal(result.values[0], np.mean(values))
+    np.testing.assert_array_equal(result.to_numpy()[0], np.mean(values))
 
 
 def test_to_annual_uncertainty_uses_rss_over_n():
@@ -101,7 +100,7 @@ def test_to_annual_uncertainty_uses_rss_over_n():
     result = to_annual(da, is_uncertainty=True)
     assert result.sizes["time"] == 1
     expected = np.sqrt((values**2).sum()) / len(values)
-    np.testing.assert_allclose(result.values[0], expected, rtol=1e-6)
+    np.testing.assert_allclose(result.to_numpy()[0], expected, rtol=1e-6)
 
 
 def test_prepare_gridded_ds_for_selrem_raises_no_crs(example_mass_balance_ds: xr.Dataset):
@@ -132,12 +131,12 @@ def test_prepare_gridded_ds_for_selrem_output_schema_no_error_col(example_mass_b
     assert "y" in out.variables
     assert "x" in out.variables
     assert out.sizes["time"] == example_mass_balance_ds.sizes["time"]
-    assert np.all(np.isnan(out[MASS_BALANCE_ERROR_COL_NAME].values))
+    assert np.all(np.isnan(out[MASS_BALANCE_ERROR_COL_NAME].to_numpy()))
 
 
 def test_prepare_gridded_ds_for_selrem_output_schema_with_error_col(example_mass_balance_ds: xr.Dataset):
     """With an error column present it should be processed and populated."""
-    err_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].values)
+    err_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy())
     ds = example_mass_balance_ds.assign({MASS_BALANCE_ERROR_COL_NAME: (("time", "y", "x"), err_data)})
     out = prepare_gridded_ds_for_selrem(ds)
 
@@ -145,13 +144,13 @@ def test_prepare_gridded_ds_for_selrem_output_schema_with_error_col(example_mass
     assert "y" in out.variables
     assert "x" in out.variables
     # values should not all be NaN (the error data was random non-NaN values)
-    assert not np.all(np.isnan(out[MASS_BALANCE_ERROR_COL_NAME].values))
+    assert not np.all(np.isnan(out[MASS_BALANCE_ERROR_COL_NAME].to_numpy()))
 
 
 def test_prepare_error_col_values_match_input(example_mass_balance_ds: xr.Dataset):
     """The processed error column should reflect the input error data."""
-    mb_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].values)
-    err_data = np.full_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].values, 2.0)
+    mb_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy())
+    err_data = np.full_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy(), 2.0)
     ds = example_mass_balance_ds.assign(
         {
             MASS_BALANCE_COL_NAME: (("time", "y", "x"), mb_data),
@@ -160,13 +159,13 @@ def test_prepare_error_col_values_match_input(example_mass_balance_ds: xr.Datase
     )
     out = prepare_gridded_ds_for_selrem(ds)
 
-    np.testing.assert_allclose(out[MASS_BALANCE_ERROR_COL_NAME].values, 2.0)
-    np.testing.assert_allclose(out[MASS_BALANCE_COL_NAME].values, 1.0)
+    np.testing.assert_allclose(out[MASS_BALANCE_ERROR_COL_NAME].to_numpy(), 2.0)
+    np.testing.assert_allclose(out[MASS_BALANCE_COL_NAME].to_numpy(), 1.0)
 
 
 def test_prepare_point_dim_drops_all_nan_points(example_mass_balance_ds: xr.Dataset):
     """Columns where every timestep is NaN should be excluded from points."""
-    mb_data = example_mass_balance_ds[MASS_BALANCE_COL_NAME].values.copy()
+    mb_data = example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy().copy()
     mb_data[:, -1, :] = np.nan  # make the last row all-NaN
     ds = example_mass_balance_ds.assign({MASS_BALANCE_COL_NAME: (("time", "y", "x"), mb_data)})
     out = prepare_gridded_ds_for_selrem(ds)
@@ -181,16 +180,18 @@ def test_prepare_latlon_coords_are_geographic(example_mass_balance_ds: xr.Datase
     """Output x/y coords (lon/lat) should be within geographic bounds."""
     out = prepare_gridded_ds_for_selrem(example_mass_balance_ds)
 
-    lats = out["y"].values
-    lons = out["x"].values
-    assert np.all(lats >= -90) and np.all(lats <= 90)
-    assert np.all(lons >= -180) and np.all(lons <= 180)
+    lats = out["y"].to_numpy()
+    lons = out["x"].to_numpy()
+    assert np.all(lats >= -90)
+    assert np.all(lats <= 90)
+    assert np.all(lons >= -180)
+    assert np.all(lons <= 180)
 
 
 def test_prepare_point_index_is_sequential(example_mass_balance_ds: xr.Dataset):
     """The point coordinate should be a zero-based integer index."""
     out = prepare_gridded_ds_for_selrem(example_mass_balance_ds)
-    np.testing.assert_array_equal(out["point"].values, np.arange(out.sizes["point"]))
+    np.testing.assert_array_equal(out["point"].to_numpy(), np.arange(out.sizes["point"]))
 
 
 def test_prepare_coarsen_reduces_points(example_mass_balance_ds: xr.Dataset):
@@ -218,8 +219,8 @@ def test_prepare_coarsen_factor_below_one_warns_and_does_not_coarsen(
 
 def test_prepare_coarsen_sums_mass(example_mass_balance_ds: xr.Dataset):
     """With uniform data, coarsening (sum) should produce 4 x the per-cell value for factor=2 for both MB and error."""
-    mb_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].values)
-    err_data = np.full_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].values, 2.0)
+    mb_data = np.ones_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy())
+    err_data = np.full_like(example_mass_balance_ds[MASS_BALANCE_COL_NAME].to_numpy(), 2.0)
     ds = example_mass_balance_ds.assign(
         {
             MASS_BALANCE_COL_NAME: (("time", "y", "x"), mb_data),
@@ -227,9 +228,9 @@ def test_prepare_coarsen_sums_mass(example_mass_balance_ds: xr.Dataset):
         }
     )
     out = prepare_gridded_ds_for_selrem(ds, coarsen_factor=2)
-    # MB sums 4 cells of 1.0 -> 4.0; error combines in quadrature: sqrt(4 × 2.0^2) = 4.0
-    np.testing.assert_allclose(out[MASS_BALANCE_COL_NAME].values, 4.0)
-    np.testing.assert_allclose(out[MASS_BALANCE_ERROR_COL_NAME].values, 4.0)
+    # MB sums 4 cells of 1.0 -> 4.0; error combines in quadrature: sqrt(4 * 2.0^2) = 4.0
+    np.testing.assert_allclose(out[MASS_BALANCE_COL_NAME].to_numpy(), 4.0)
+    np.testing.assert_allclose(out[MASS_BALANCE_ERROR_COL_NAME].to_numpy(), 4.0)
 
 
 def test_prepare_sub_annual_input_resampled(example_mass_balance_ds: xr.Dataset):
@@ -258,22 +259,22 @@ def test_prepare_sub_annual_input_resampled(example_mass_balance_ds: xr.Dataset)
     # spatial extent is unchanged by temporal resampling
     assert out.sizes["point"] == ny * nx
     # time labels should cover both years
-    assert out.coords["time"].dt.year.values.tolist() == [2010, 2011]
+    assert out.coords["time"].dt.year.to_numpy().tolist() == [2010, 2011]
     # values should match the per-year mean of the monthly input (stack order is row-major)
     np.testing.assert_allclose(
-        out[MASS_BALANCE_COL_NAME].isel(time=0).values, data[:12].mean(axis=0).ravel(), rtol=1e-5
+        out[MASS_BALANCE_COL_NAME].isel(time=0).to_numpy(), data[:12].mean(axis=0).ravel(), rtol=1e-5
     )
     np.testing.assert_allclose(
-        out[MASS_BALANCE_COL_NAME].isel(time=1).values, data[12:].mean(axis=0).ravel(), rtol=1e-5
+        out[MASS_BALANCE_COL_NAME].isel(time=1).to_numpy(), data[12:].mean(axis=0).ravel(), rtol=1e-5
     )
     # error is resampled using RSS/N
     np.testing.assert_allclose(
-        out[MASS_BALANCE_ERROR_COL_NAME].isel(time=0).values,
+        out[MASS_BALANCE_ERROR_COL_NAME].isel(time=0).to_numpy(),
         (np.sqrt((err_data[:12] ** 2).sum(axis=0)) / 12).ravel(),
         rtol=1e-5,
     )
     np.testing.assert_allclose(
-        out[MASS_BALANCE_ERROR_COL_NAME].isel(time=1).values,
+        out[MASS_BALANCE_ERROR_COL_NAME].isel(time=1).to_numpy(),
         (np.sqrt((err_data[12:] ** 2).sum(axis=0)) / 12).ravel(),
         rtol=1e-5,
     )

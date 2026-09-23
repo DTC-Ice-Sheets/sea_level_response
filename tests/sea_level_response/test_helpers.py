@@ -36,7 +36,7 @@ def test_get_dataset_crs_written_with_rioxarray():
 
 
 @pytest.mark.parametrize(
-    "coords,expected",
+    ("coords", "expected"),
     [
         ({"x": [1, 2], "y": [3, 4]}, ("x", "y")),
         (

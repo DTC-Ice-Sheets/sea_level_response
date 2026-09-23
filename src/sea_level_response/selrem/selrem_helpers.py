@@ -46,9 +46,9 @@ def load_ocean_mask() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         A tuple containing the ocean mask array, longitude array, and latitude array.
     """
     ds = xr.open_dataset(OCEAN_MASK_PATH)
-    ocean_mask = ds["ocean_mask"].values
-    lons = ds["lon"].values
-    lats = ds["lat"].values
+    ocean_mask = ds["ocean_mask"].to_numpy()
+    lons = ds["lon"].to_numpy()
+    lats = ds["lat"].to_numpy()
 
     return ocean_mask, lons, lats
 
@@ -85,9 +85,7 @@ def reproject_ocean_mask(
     points = np.stack([lon2d.flatten(), lat2d.flatten()], axis=-1)
     interp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
     ocean_mask_reprojected = interp(points).reshape(lon2d.shape)
-    ocean_mask_reprojected = (ocean_mask_reprojected > 0.5).astype(int)
-
-    return ocean_mask_reprojected
+    return (ocean_mask_reprojected > 0.5).astype(int)
 
 
 def slice_and_prepare_dataset(
@@ -114,8 +112,6 @@ def slice_and_prepare_dataset(
 
     Raises
     ------
-    FileNotFoundError
-        If the specified VMB dataset path does not exist.
     ValueError
         If the dataset does not contain a 'time' dimension or if the time range is invalid
     """

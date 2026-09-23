@@ -45,33 +45,33 @@ target-version = "py312"
 preview = true
 select = [
     "T20", # Disallow print statements
-    "A",    # Ambiguity
-    "ANN",  # Annotations
-    "B",    # Bad practices
-    "C90",    # Complexity
-    "D",    # Documentation
-    "E",    # Errors
-    "F",    # Pyflakes (e.g. unused imports and vars)
-    "G",    # logging formatting
-    "I",    # Imports
-    "N",    # Naming
-    "Q",    # Quoting
-    "W",    # Warnings
-    "PT",   # pytest-style
-    "SIM",  # flake8-simplify
-    "C4",   # flake8-comprehensions
-    "ARG",  # flake8-unused-arguments
-    "PIE",  # flake8-pie
-    "RUF",  # Ruff-specific rules
-    "BLE",  # Blind except
-    "RET",  # Return statements
-    "PTH",  # Use pathlib
-    "PD",   # Pandas
+    "A",   # Ambiguity
+    "ANN", # Annotations
+    "B",   # Bad practices
+    "C90", # Complexity
+    "D",   # Documentation
+    "E",   # Errors
+    "F",   # Pyflakes (e.g. unused imports and vars)
+    "G",   # logging formatting
+    "I",   # Imports
+    "N",   # Naming
+    "Q",   # Quoting
+    "W",   # Warnings
+    "PT",  # pytest-style
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "ARG", # flake8-unused-arguments
+    "PIE", # flake8-pie
+    "RUF", # Ruff-specific rules
+    "BLE", # Blind except
+    "RET", # Return statements
+    "PTH", # Use pathlib
+    "PD",  # Pandas
 ]
 
 [tool.pydoclint]
-style='numpy'
-check_style_mismatch="true"
+style = 'numpy'
+check_style_mismatch = "true"
 
 mccabe = { max-complexity = 10 }
 
@@ -90,6 +90,9 @@ ignore = [
     "S101", # Allow the use of 'assert' statements in test files (common practice in pytest)
     "D103", # Ignore missing docstring warnings for functions in test files (commonly not required for small test functions)
     "ANN",  # Ignore missing type annotations for functions in test files (commonly not required for small test functions)
+]
+"src/sea_level_response/selrem/numba_functions.py" = [
+    "ANN", # Ignore missing type annotations in numba functions file (type hints cause issues with Numba JIT compilation)
 ]
 
 [tool.ruff.lint.pydocstyle]

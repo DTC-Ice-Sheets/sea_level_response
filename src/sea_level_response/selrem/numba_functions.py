@@ -12,6 +12,8 @@ from numba import njit, prange
 from sea_level_response.config import EARTH_RADIUS_M, SELREM_ROT_COEFF
 
 
+# Keep this Numba kernel unannotated: pytest-typeguard instruments annotations such as np.ndarray with runtime
+# TypeCheckMemo checks, which Numba cannot type in nopython mode after @njit compilation.
 @njit(parallel=True, fastmath=True)
 def accumulate_fields(
     lat_arr,

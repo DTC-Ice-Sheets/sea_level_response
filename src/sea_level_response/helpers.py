@@ -124,7 +124,7 @@ def write_to_geozarr_file(data: xr.Dataset, output_path: Path) -> None:
     logger.info("GeoZarr written successfully.")
 
 
-def path_or_web_url_validator(type_: object, path_or_url: Path | str) -> str:
+def path_or_web_url_validator(type_: object, path_or_url: Path | str) -> str:  # noqa: ARG001
     """Validate that the provided path is either a valid local path or a web URL.
 
     NOTE: Path("") resolves to the current directory (".") - which is considered a valid path.
@@ -140,6 +140,11 @@ def path_or_web_url_validator(type_: object, path_or_url: Path | str) -> str:
     -------
     str
         The validated path or URL as a string.
+
+    Raises
+    ------
+    ValueError
+        If the provided path is neither a valid local path nor a web URL.
     """
     if not Path(path_or_url).exists() and not str(path_or_url).startswith(("http://", "https://", "s3://")):
         raise ValueError(f"The provided path '{path_or_url}' is neither a valid local path nor a web URL.")
