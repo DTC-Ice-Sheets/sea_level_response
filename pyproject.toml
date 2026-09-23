@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "sea_level_response"
 version = "0.0.0"
 description = "DTC-IS module to calculate sea-level changes arising from water mass inputs to the oceans."
-authors = ["Earthwave Ltd <info@earthwave.co.uk>"]
+authors = ["DTC-IS consortium <support@dtc-ice-sheets.org>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/dtc-ice-sheets/sea_level_response"
@@ -16,6 +16,13 @@ packages = [{ include = "sea_level_response", from = "src" }]
 python = ">=3.12,<4.0"
 numpy = "^2.4"
 cyclopts = "^4.5.1"
+scipy = "^1.16.3"
+xarray = "^2025.12.0"
+numba = "^0.66.0"
+zarr = "^3.1.5"
+xgboost = "^3.2.0"
+rioxarray = ">=0.15.0,<0.22.0"
+data_converter = { git = "https://github.com/DTC-Ice-Sheets/data_converter.git", tag = "0.0.48" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.2"
