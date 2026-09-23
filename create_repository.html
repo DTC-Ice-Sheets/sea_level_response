@@ -92,13 +92,13 @@
   <section id="adapting-the-dtc-template-for-your-module">
 <h1>Adapting the DTC template for your module<a class="headerlink" href="#adapting-the-dtc-template-for-your-module" title="Link to this heading"></a></h1>
 <p>Each DTC Python module should have an associated repository within the <a class="reference external" href="https://github.com/DTC-Ice-Sheets">DTC Ice Sheets GitHub organisation</a>.
-Each such repository should be created from the <a class="reference external" href="https://github.com/DTC-Ice-Sheets/dtc_python_template">template provided by the dev team</a>.
+Each such repository should be created from the <a class="reference external" href="https://github.com/DTC-Ice-Sheets/sea_level_response">template provided by the dev team</a>.
 This section explains how to adapt this template for your module.</p>
 <p>If you are unfamiliar with GitHub, git, or CI/CD, please ask one of the members of the <a class="reference external" href="https://github.com/orgs/DTC-Ice-Sheets/teams/engineering">DTC engineering team</a>
 to help you set up your repository!</p>
 <section id="copy-the-template">
 <h2>Copy the template<a class="headerlink" href="#copy-the-template" title="Link to this heading"></a></h2>
-<p>To start, navigate to the <a class="reference external" href="https://github.com/DTC-Ice-Sheets/dtc_python_template">DTC Python template repository</a>
+<p>To start, navigate to the <a class="reference external" href="https://github.com/DTC-Ice-Sheets/sea_level_response">DTC Python template repository</a>
 and click <code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">This</span> <span class="pre">Template</span></code> in the top right corner.</p>
 <p>Please provide a repository name (consider this carefully!) as well as a description. If your repository name
 is made up of multiple words, please separate them with underscores (_).</p>
@@ -109,9 +109,9 @@ is made up of multiple words, please separate them with underscores (_).</p>
 <p>The next thing you should do is clone the repository to your computer and make a single commit to a <strong>new branch</strong> in
 which you have:</p>
 <ul>
-<li><p>changed <code class="docutils literal notranslate"><span class="pre">dtc_python_template</span></code> to <code class="docutils literal notranslate"><span class="pre">your_new_package</span></code> everywhere in the code</p></li>
-<li><p>changed <code class="docutils literal notranslate"><span class="pre">dtc-python-template</span></code> to <code class="docutils literal notranslate"><span class="pre">your-new-package</span></code> everywhere in the code</p></li>
-<li><p>renamed files and folder that include <code class="docutils literal notranslate"><span class="pre">dtc_python_template</span></code> to <code class="docutils literal notranslate"><span class="pre">your_new_package</span></code> (remember to look in the
+<li><p>changed <code class="docutils literal notranslate"><span class="pre">sea_level_response</span></code> to <code class="docutils literal notranslate"><span class="pre">your_new_package</span></code> everywhere in the code</p></li>
+<li><p>changed <code class="docutils literal notranslate"><span class="pre">sea_level_response</span></code> to <code class="docutils literal notranslate"><span class="pre">your-new-package</span></code> everywhere in the code</p></li>
+<li><p>renamed files and folder that include <code class="docutils literal notranslate"><span class="pre">sea_level_response</span></code> to <code class="docutils literal notranslate"><span class="pre">your_new_package</span></code> (remember to look in the
 <code class="docutils literal notranslate"><span class="pre">.github/workflows</span></code> folder as well!)</p></li>
 <li><p>updated the <code class="docutils literal notranslate"><span class="pre">[tool.poetry]</span></code> section of the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file:</p>
 <blockquote>
@@ -129,7 +129,7 @@ take a few minutes at most. Once that happens, merge your first branch to main a
 Look under the “actions” tab for a green tick. if you see an orange circle, wait for it to finish and result in a green
 tick (you may need to refresh the page).</p>
 <p>If the chain completes successfully, you’re ready to proceed. If not, go back and make sure you’ve updated all instances
-of <code class="docutils literal notranslate"><span class="pre">dtc_python_template</span></code> and <code class="docutils literal notranslate"><span class="pre">dtc-python-template</span></code>, including for file names and folder names, and push again.</p>
+of <code class="docutils literal notranslate"><span class="pre">sea_level_response</span></code> and <code class="docutils literal notranslate"><span class="pre">sea_level_response</span></code>, including for file names and folder names, and push again.</p>
 </section>
 <section id="configure-repository-settings">
 <h2>Configure repository settings<a class="headerlink" href="#configure-repository-settings" title="Link to this heading"></a></h2>

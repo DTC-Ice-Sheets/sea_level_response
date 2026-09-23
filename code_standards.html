@@ -157,8 +157,8 @@ hints to the function signature so they are automatically included in the templa
 allows us to record errors, warnings, or debugging details in a consistent and configurable way. Unlike <code class="docutils literal notranslate"><span class="pre">print</span></code>
 statements, logging provides more flexibility and can be easily directed to different outputs and filtered based on
 severity levels.</p>
-<p>The DTC Python template provides a core logging configuration for the entire package in <code class="docutils literal notranslate"><span class="pre">src/dtc_python_template/monitoring.py::setup_logging()</span></code>.
-This is run before any other package code (see <code class="docutils literal notranslate"><span class="pre">src/dtc_python_template/__main__.py</span></code>). This ensures that all logs
+<p>The DTC Python template provides a core logging configuration for the entire package in <code class="docutils literal notranslate"><span class="pre">src/sea_level_response/monitoring.py::setup_logging()</span></code>.
+This is run before any other package code (see <code class="docutils literal notranslate"><span class="pre">src/sea_level_response/__main__.py</span></code>). This ensures that all logs
 follow a consistent format and are appropriately handled.</p>
 <p>Here is an example of how to define and use a logger in your Python file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -190,8 +190,8 @@ develop your code to catch errors early and ensure that your code remains reliab
 coverage in DTC to ensure that a sufficient portion of your codebase is being tested. Code coverage is displayed
 whenever you run the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> command in a correctly configured poetry environment.</p>
 <p>All unit tests should be placed in the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory. The location and naming of the test files should mirror
-that of the files they are testing. For example, if your file is <code class="docutils literal notranslate"><span class="pre">src/dtc_python_template/example_subpackage/example_module_b.py</span></code>,
-the corresponding test file should be <code class="docutils literal notranslate"><span class="pre">tests/dtc_python_template/example_sub_package/test_example_module_b.py</span></code>.</p>
+that of the files they are testing. For example, if your file is <code class="docutils literal notranslate"><span class="pre">src/sea_level_response/example_subpackage/example_module_b.py</span></code>,
+the corresponding test file should be <code class="docutils literal notranslate"><span class="pre">tests/sea_level_response/example_sub_package/test_example_module_b.py</span></code>.</p>
 <p>Unit tests often require <code class="docutils literal notranslate"><span class="pre">mocking</span></code> of complex objects or external dependencies, replacing them under test with
 controlled, simplified versions that simulate specific behaviors. Please see <a class="reference external" href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock library</a>
 for more information.</p>
