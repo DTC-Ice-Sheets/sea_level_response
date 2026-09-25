@@ -8,6 +8,12 @@ on:
         description: "The name of the package to build."
         required: true
         type: string
+      container_suffix:
+        description: "Suffix appended to the production container name."
+        type: string
+        # "production" on main, the branch name otherwise
+        default: ${{ github.ref_name == 'main' && 'production' || github.ref_name }}
+
 
 jobs:
   generate_container_name:
@@ -26,8 +32,48 @@ jobs:
     outputs:
       image_name: ${{ steps.specify.outputs.image_name }}
 
+  build_and_push_production_container:
+    runs-on: ubuntu-latest
+    container:
+      image: docker:27.4
+    defaults:
+      run:
+        shell: sh -l {0}
+    steps:
+      - name: Login to OVH Registry
+        uses: docker/login-action@v3
+        with:
+          registry: 7sy3luly.c1.de1.container-registry.ovh.net
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: Define container name
+        id: name_container
+        run: |
+          echo "image_name=7sy3luly.c1.de1.container-registry.ovh.net/dtc-ice-sheets/${{ inputs.package_name }}_${{ inputs.container_suffix }}" | awk '{print tolower($0)}' >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: '2'
+
+      - name: Configure runtime environment variable secrets
+        run: echo "${{ secrets.GH_ADMIN_PAT }}" > .gh_token.txt
+
+      - name: Build and push this package's production image
+      # We use Docker BuildKit to ensure the GitHub token remains a secret and is not shown in plaintext in build logs
+        run: |
+          DOCKER_BUILDKIT=1 docker build \
+            --cache-from ${{ steps.name_container.outputs.image_name }} \
+            --secret id=github_token,src=.gh_token.txt \
+            --tag ${{ steps.name_container.outputs.image_name }} -f Dockerfile .
+          docker push "${{ steps.name_container.outputs.image_name }}"
+      - name: Clean up secrets
+        run: |
+          rm -f .gh_token.txt
+          rm -f .env
+
   deploy_package_and_cleanup:
     needs: generate_container_name
+    if: ${{ github.ref_name == 'main' }}
     # delete docker images that are no longer needed (notionally because we just merged the associated branch into main)
     runs-on: ubuntu-latest
     container:

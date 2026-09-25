@@ -72,9 +72,15 @@ jobs:
       - name: Build and push this package's test image
         if:  ${{ steps.check_if_image_exists.outputs.image_exists == 'false'}}
         run: |
+          export GITHUB_TOKEN=${{ secrets.GH_ADMIN_PAT }}
           docker build \
             --cache-from ${{ steps.name_container.outputs.image_name }} \
+            --secret id=github_token,env=GITHUB_TOKEN \
             --tag "${{ steps.name_container.outputs.image_name }}:$CURRENT_HASH" \
             --tag "${{ steps.name_container.outputs.image_name }}:latest" -f .github/test_env_dockerfile .
           docker push "${{ steps.name_container.outputs.image_name }}:$CURRENT_HASH"
           docker push "${{ steps.name_container.outputs.image_name }}:latest"
+      - name: Clean up secrets
+        run: |
+          rm -f gh_token.txt
+          rm -f .env

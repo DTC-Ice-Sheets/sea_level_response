@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libssl-dev \
     curl \
+    git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,5 +25,11 @@ COPY pyproject.toml pyproject.toml
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
 COPY poetry.lock poetry.lock
+RUN --mount=type=secret,id=github_token \
+    mkdir -p /root && \
+    echo "machine github.com login git password $(cat /run/secrets/github_token)" > /root/.netrc && \
+    chmod 600 /root/.netrc
 # Install Python dependencies using Poetry
 RUN poetry install --with dev --no-root && rm -rf $POETRY_CACHE_DIR
+
+RUN rm -f /root/.netrc

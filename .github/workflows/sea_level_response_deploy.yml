@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main # only on main (and implicitly not tags)
+  workflow_dispatch:  # allow manual triggering of the workflow
 
 jobs:
   build_container_if_needed:
