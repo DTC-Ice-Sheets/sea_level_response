@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sea_level_response.selrem.selrem_helpers &mdash; DTC Ice Sheets: Sea Level Response  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sea_level_response.selrem.selrem_input_prep" href="sea_level_response.selrem.selrem_input_prep.html" />
+    <link rel="prev" title="sea_level_response.selrem.selrem" href="sea_level_response.selrem.selrem.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DTC Ice Sheets: Sea Level Response
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.data.html">sea_level_response.selrem.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.numba_functions.html">sea_level_response.selrem.numba_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem.html">sea_level_response.selrem.selrem</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sea_level_response.selrem.selrem_helpers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem_input_prep.html">sea_level_response.selrem.selrem_input_prep</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem_entrypoint.html">sea_level_response.selrem_entrypoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.slr_ts_entrypoint.html">sea_level_response.slr_ts_entrypoint</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DTC Ice Sheets: Sea Level Response</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.html">sea_level_response</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.selrem.html">sea_level_response.selrem</a></li>
+      <li class="breadcrumb-item active">sea_level_response.selrem.selrem_helpers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/sea_level_response.selrem.selrem_helpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sea_level_response.selrem.selrem_helpers">
+<span id="sea-level-response-selrem-selrem-helpers"></span><h1>sea_level_response.selrem.selrem_helpers<a class="headerlink" href="#module-sea_level_response.selrem.selrem_helpers" title="Link to this heading"></a></h1>
+<p>SELREM helper module.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window" title="sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mean_mass_balance_over_time_window</span></code></a>(ds)</p></td>
+<td><p>Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.load_ocean_mask" title="sea_level_response.selrem.selrem_helpers.load_ocean_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_ocean_mask</span></code></a>()</p></td>
+<td><p>Load the ocean mask from a NetCDF file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.load_selrem_parameters" title="sea_level_response.selrem.selrem_helpers.load_selrem_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_selrem_parameters</span></code></a>()</p></td>
+<td><p>Load SELREM parameters from a JSON file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries" title="sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preprocess_location_timeseries</span></code></a>(...)</p></td>
+<td><p>Preprocess annual SLR data for a specific location, returning plot-ready time series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.reproject_ocean_mask" title="sea_level_response.selrem.selrem_helpers.reproject_ocean_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reproject_ocean_mask</span></code></a>(ocean_mask, mask_lons, ...)</p></td>
+<td><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset" title="sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slice_and_prepare_dataset</span></code></a>(vmb_dataset_path, ...)</p></td>
+<td><p>Load, slice, and prepare the VMB dataset for SELREM computation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">compute_mean_mass_balance_over_time_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window" title="Link to this definition"></a></dt>
+<dd><p>Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Input mass balance dataset with a time dimension.</p></li>
+<li><p><strong>start_time</strong> (<em>datetime</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+accordingly before computing the mean. Otherwise, the entire time range is used.</p></li>
+<li><p><strong>end_time</strong> (<em>datetime</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+accordingly before computing the mean. Otherwise, the entire time range is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataset with the same spatial dimensions (‘point’, ‘x’, ‘y’), where the ‘time’ dimension has been removed and
+each variable represents the mean value across the specified years.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.load_ocean_mask">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">load_ocean_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.load_ocean_mask" title="Link to this definition"></a></dt>
+<dd><p>Load the ocean mask from a NetCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing the ocean mask array, longitude array, and latitude array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.load_selrem_parameters">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">load_selrem_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.load_selrem_parameters" title="Link to this definition"></a></dt>
+<dd><p>Load SELREM parameters from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndot_fit, udot_fit, ndot_unc, udot_unc arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">preprocess_location_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annual_slr_ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries" title="Link to this definition"></a></dt>
+<dd><p>Preprocess annual SLR data for a specific location, returning plot-ready time series.</p>
+<p>This function extracts time series data at the nearest grid point to the specified coordinates,
+computes cumulative sums, calculates linear trends, and returns data ready for plotting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>annual_slr_ds</strong> (<em>xr.Dataset</em>) – Annual SLR dataset containing ‘ndot’, ‘udot’, ‘sdot’ and their uncertainties.</p></li>
+<li><p><strong>lat0</strong> (<em>float</em>) – Target latitude in decimal degrees (-90 to 90).</p></li>
+<li><p><strong>lon0</strong> (<em>float</em>) – Target longitude in decimal degrees (-180 to 180).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- ‘years’: List of year labels (integers)
+- ‘sdot_cumulative’: Cumulative relative SLR (mm)
+- ‘ndot_cumulative’: Cumulative absolute SLR (mm)
+- ‘udot_cumulative’: Cumulative vertical deformation (mm)
+- ‘sig_sdot_cumulative’: Cumulative uncertainty for sdot (mm)
+- ‘sig_ndot_cumulative’: Cumulative uncertainty for ndot (mm)
+- ‘sig_udot_cumulative’: Cumulative uncertainty for udot (mm)
+- ‘slope_sdot’: Linear trend for relative SLR (mm/yr)
+- ‘slope_ndot’: Linear trend for absolute SLR (mm/yr)
+- ‘slope_udot’: Linear trend for vertical deformation (mm/yr)
+- ‘actual_lat’: Actual latitude of nearest grid point
+- ‘actual_lon’: Actual longitude of nearest grid point</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.reproject_ocean_mask">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">reproject_ocean_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ocean_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_lons</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_lons</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.reproject_ocean_mask" title="Link to this definition"></a></dt>
+<dd><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – The original ocean mask array.</p></li>
+<li><p><strong>mask_lons</strong> (<em>np.ndarray</em>) – Longitudes of the original mask grid.</p></li>
+<li><p><strong>mask_lats</strong> (<em>np.ndarray</em>) – Latitudes of the original mask grid.</p></li>
+<li><p><strong>target_lons</strong> (<em>np.ndarray</em>) – Target longitudes for the new grid.</p></li>
+<li><p><strong>target_lats</strong> (<em>np.ndarray</em>) – Target latitudes for the new grid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reprojected ocean mask on the target grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_helpers.</span></span><span class="sig-name descname"><span class="pre">slice_and_prepare_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmb_dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset" title="Link to this definition"></a></dt>
+<dd><p>Load, slice, and prepare the VMB dataset for SELREM computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vmb_dataset_path</strong> (<em>Path</em><em> | </em><em>str</em>) – Path to the VMB GeoZarr dataset.</p></li>
+<li><p><strong>start_time</strong> (<em>datetime</em>) – Start time for slicing.</p></li>
+<li><p><strong>end_time</strong> (<em>datetime</em>) – End time for slicing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sliced and prepared VMB dataset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the dataset does not contain a ‘time’ dimension or if the time range is invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sea_level_response.selrem.selrem.html" class="btn btn-neutral float-left" title="sea_level_response.selrem.selrem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sea_level_response.selrem.selrem_input_prep.html" class="btn btn-neutral float-right" title="sea_level_response.selrem.selrem_input_prep" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

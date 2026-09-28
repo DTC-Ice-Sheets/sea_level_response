@@ -1,0 +1,17 @@
+sea\_level\_response.selrem.selrem\_helpers
+===========================================
+
+.. automodule:: sea_level_response.selrem.selrem_helpers
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compute_mean_mass_balance_over_time_window
+      load_ocean_mask
+      load_selrem_parameters
+      preprocess_location_timeseries
+      reproject_ocean_mask
+      slice_and_prepare_dataset
+   

@@ -1,0 +1,13 @@
+sea\_level\_response.selrem.selrem\_input\_prep
+===============================================
+
+.. automodule:: sea_level_response.selrem.selrem_input_prep
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      prepare_gridded_ds_for_selrem
+      to_annual
+   

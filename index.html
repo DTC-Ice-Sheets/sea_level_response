@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DTC Ice Sheets Development Guide &mdash; DTC Ice Sheets Development Guide  documentation</title>
+  <title>DTC Ice Sheets: Sea Level Response &mdash; DTC Ice Sheets: Sea Level Response  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Development Environment" href="development_environment.html" /> 
+    <link rel="next" title="API Reference" href="api.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
           
           
           <a href="#" class="icon icon-home">
-            DTC Ice Sheets Development Guide
+            DTC Ice Sheets: Sea Level Response
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,12 +44,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">How do I...:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="development_environment.html">Set up my environment?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="create_repository.html">Create my repository?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code_standards.html">Adhere to coding standards?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development_workflow.html">Contribute to the codebase?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
         </div>
@@ -58,7 +55,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">DTC Ice Sheets Development Guide</a>
+          <a href="#">DTC Ice Sheets: Sea Level Response</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +63,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">DTC Ice Sheets Development Guide</li>
+      <li class="breadcrumb-item active">DTC Ice Sheets: Sea Level Response</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,27 +73,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dtc-ice-sheets-development-guide">
-<h1>DTC Ice Sheets Development Guide<a class="headerlink" href="#dtc-ice-sheets-development-guide" title="Link to this heading"></a></h1>
-<p>Welcome to the DTC IS Development Guide! This guide will walk you through setting up a development environment, creating
-a repository from the DTC Python template, adhering to our coding standards, and contributing code to the project.</p>
-<p>This documentation is not exhaustive - please reach out to the engineering team if you have any questions :)</p>
+  <section id="dtc-ice-sheets-sea-level-response">
+<h1>DTC Ice Sheets: Sea Level Response<a class="headerlink" href="#dtc-ice-sheets-sea-level-response" title="Link to this heading"></a></h1>
+<p>TODO - write some Documentation here…</p>
+</section>
+<section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h1>
+<p>The package provides two CLI entry points, one to calculate global sea-level rise given an input mass balance dataset
+and another to extract a sea-level time series at a specific location.</p>
+<p>Run either with <code class="docutils literal notranslate"><span class="pre">--help</span></code> to see all options.</p>
+<section id="global-slr-computation">
+<h2>Global SLR computation<a class="headerlink" href="#global-slr-computation" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="_autosummary/sea_level_response.selrem_entrypoint.html#module-sea_level_response.selrem_entrypoint" title="sea_level_response.selrem_entrypoint"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sea_level_response.selrem_entrypoint</span></code></a> computes global-mean or gridded annual sea-level rise
+from a vertical mass balance (VMB) GeoZarr dataset:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>sea_level_response.selrem_entrypoint<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--mass-balance-geozarr<span class="w"> </span>/path/to/mass_balance.zarr<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--start-time<span class="w"> </span><span class="m">2000</span>-01-01<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--end-time<span class="w"> </span><span class="m">2020</span>-01-01<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--analysis-mode<span class="w"> </span>annual<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output-path<span class="w"> </span>/path/to/output.zarr
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">--analysis-mode</span> <span class="pre">global</span></code> for a single global-mean value instead of a gridded annual series.
+Use <code class="docutils literal notranslate"><span class="pre">--coarsen-factor</span></code> to spatially coarsen gridded inputs, and <code class="docutils literal notranslate"><span class="pre">--scaling-factor</span></code> to scale the
+input mass balance values before computation.</p>
+</section>
+<section id="location-time-series-extraction">
+<h2>Location time-series extraction<a class="headerlink" href="#location-time-series-extraction" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="_autosummary/sea_level_response.slr_ts_entrypoint.html#module-sea_level_response.slr_ts_entrypoint" title="sea_level_response.slr_ts_entrypoint"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sea_level_response.slr_ts_entrypoint</span></code></a> extracts a sea-level time series at a single location
+from the annual, gridded output produced above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>sea_level_response.slr_ts_entrypoint<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--annual-slr-gz-path<span class="w"> </span>/path/to/output.zarr<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--latitude<span class="w"> </span><span class="m">69</span>.2<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--longitude<span class="w"> </span>-49.9<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output-path<span class="w"> </span>/path/to/timeseries.json
+</pre></div>
+</div>
+<p>The result is written as JSON containing the extracted time series for the given coordinates.</p>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">How do I...:</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="development_environment.html">Set up my environment?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="create_repository.html">Create my repository?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code_standards.html">Adhere to coding standards?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development_workflow.html">Contribute to the codebase?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/sea_level_response.html">sea_level_response</a></li>
+</ul>
+</li>
 </ul>
 </div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="development_environment.html" class="btn btn-neutral float-right" title="Development Environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

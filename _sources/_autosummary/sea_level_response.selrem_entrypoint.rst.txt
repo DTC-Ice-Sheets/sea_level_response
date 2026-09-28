@@ -1,0 +1,12 @@
+sea\_level\_response.selrem\_entrypoint
+=======================================
+
+.. automodule:: sea_level_response.selrem_entrypoint
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      main
+   

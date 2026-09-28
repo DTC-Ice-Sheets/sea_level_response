@@ -1,0 +1,14 @@
+sea\_level\_response.selrem.selrem
+==================================
+
+.. automodule:: sea_level_response.selrem.selrem
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compute_annual_slr
+      compute_global_slr
+      run_emulator
+   

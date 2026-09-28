@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sea_level_response.selrem.selrem_input_prep &mdash; DTC Ice Sheets: Sea Level Response  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sea_level_response.selrem_entrypoint" href="sea_level_response.selrem_entrypoint.html" />
+    <link rel="prev" title="sea_level_response.selrem.selrem_helpers" href="sea_level_response.selrem.selrem_helpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DTC Ice Sheets: Sea Level Response
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.data.html">sea_level_response.selrem.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.numba_functions.html">sea_level_response.selrem.numba_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem.html">sea_level_response.selrem.selrem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem_helpers.html">sea_level_response.selrem.selrem_helpers</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sea_level_response.selrem.selrem_input_prep</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem_entrypoint.html">sea_level_response.selrem_entrypoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.slr_ts_entrypoint.html">sea_level_response.slr_ts_entrypoint</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DTC Ice Sheets: Sea Level Response</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.html">sea_level_response</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.selrem.html">sea_level_response.selrem</a></li>
+      <li class="breadcrumb-item active">sea_level_response.selrem.selrem_input_prep</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/sea_level_response.selrem.selrem_input_prep.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sea_level_response.selrem.selrem_input_prep">
+<span id="sea-level-response-selrem-selrem-input-prep"></span><h1>sea_level_response.selrem.selrem_input_prep<a class="headerlink" href="#module-sea_level_response.selrem.selrem_input_prep" title="Link to this heading"></a></h1>
+<p>Prepare mass balance data for the SELREM entrypoint.</p>
+<p>SELREM expects a (time, point) dataset with lat/lon coordinates and annual timesteps. This module converts from a
+gridded (time, y, x) dataset with CF metadata and a CRS (e.g., as written by rioxarray) to the SELREM schema, handling
+coordinate reprojection and annual resampling as needed. If the input is already in (time, point) format, it will be
+passed through after ensuring annual resolution and appropriate coordinate variables are present.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_input_prep.prepare_gridded_ds_for_selrem" title="sea_level_response.selrem.selrem_input_prep.prepare_gridded_ds_for_selrem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_gridded_ds_for_selrem</span></code></a>(ds[, ...])</p></td>
+<td><p>Convert gridded data to the (time, point) schema SELREM expects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_input_prep.to_annual" title="sea_level_response.selrem.selrem_input_prep.to_annual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_annual</span></code></a>(da[, is_uncertainty])</p></td>
+<td><p>Resample to annual resolution if sub-annual timesteps are present.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_input_prep.prepare_gridded_ds_for_selrem">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_input_prep.</span></span><span class="sig-name descname"><span class="pre">prepare_gridded_ds_for_selrem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarsen_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_input_prep.prepare_gridded_ds_for_selrem" title="Link to this definition"></a></dt>
+<dd><p>Convert gridded data to the (time, point) schema SELREM expects.</p>
+<ul class="simple">
+<li><p>Resamples to annual resolution if sub-annual timesteps are detected.</p></li>
+<li><p>Converts to geographic coordinates (if the input CRS is not already geographic), stacks and drops all-NaN points.</p></li>
+<li><p>Coarsens spatially by the given factor if coarsen_factor &gt; 1, using mass-conserving sum for the mass balance</p></li>
+</ul>
+<p>variable and averaging for coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Gridded dataset with x, y, time coords and mass balance and (optionally) mass balance error variables.</p></li>
+<li><p><strong>coarsen_factor</strong> (<em>int</em>) – Spatial coarsening factor applied before flattening. Mass is summed (mass-conserving); coordinates are averaged.
+Default 1 (no coarsening).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataset with (time, point) dimensions and y = latitude, x = longitude coordinate variables.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the dataset does not have the required dimensions or variables, or if the coarsen_factor is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_input_prep.to_annual">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.selrem_input_prep.</span></span><span class="sig-name descname"><span class="pre">to_annual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">da</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_uncertainty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_input_prep.to_annual" title="Link to this definition"></a></dt>
+<dd><p>Resample to annual resolution if sub-annual timesteps are present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>da</strong> (<em>xr.DataArray</em>) – DataArray with a time dimension.</p></li>
+<li><p><strong>is_uncertainty</strong> (<em>bool</em>) – If True, resample using RSS/N, use mean otherwise. Default False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Annually resampled DataArray; same as input if already at annual resolution.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xr.DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sea_level_response.selrem.selrem_helpers.html" class="btn btn-neutral float-left" title="sea_level_response.selrem.selrem_helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sea_level_response.selrem_entrypoint.html" class="btn btn-neutral float-right" title="sea_level_response.selrem_entrypoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

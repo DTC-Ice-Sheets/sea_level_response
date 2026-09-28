@@ -1,0 +1,17 @@
+sea\_level\_response.selrem
+===========================
+
+.. automodule:: sea_level_response.selrem
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   data
+   numba_functions
+   selrem
+   selrem_helpers
+   selrem_input_prep

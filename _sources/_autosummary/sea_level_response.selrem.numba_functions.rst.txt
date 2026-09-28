@@ -1,0 +1,12 @@
+sea\_level\_response.selrem.numba\_functions
+============================================
+
+.. automodule:: sea_level_response.selrem.numba_functions
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      accumulate_fields
+   

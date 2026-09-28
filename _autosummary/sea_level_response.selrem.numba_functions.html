@@ -1,0 +1,175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sea_level_response.selrem.numba_functions &mdash; DTC Ice Sheets: Sea Level Response  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sea_level_response.selrem.selrem" href="sea_level_response.selrem.selrem.html" />
+    <link rel="prev" title="sea_level_response.selrem.data" href="sea_level_response.selrem.data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DTC Ice Sheets: Sea Level Response
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.data.html">sea_level_response.selrem.data</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sea_level_response.selrem.numba_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem.html">sea_level_response.selrem.selrem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem_helpers.html">sea_level_response.selrem.selrem_helpers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.selrem_input_prep.html">sea_level_response.selrem.selrem_input_prep</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem_entrypoint.html">sea_level_response.selrem_entrypoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.slr_ts_entrypoint.html">sea_level_response.slr_ts_entrypoint</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DTC Ice Sheets: Sea Level Response</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.html">sea_level_response</a></li>
+          <li class="breadcrumb-item"><a href="sea_level_response.selrem.html">sea_level_response.selrem</a></li>
+      <li class="breadcrumb-item active">sea_level_response.selrem.numba_functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/sea_level_response.selrem.numba_functions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sea_level_response.selrem.numba_functions">
+<span id="sea-level-response-selrem-numba-functions"></span><h1>sea_level_response.selrem.numba_functions<a class="headerlink" href="#module-sea_level_response.selrem.numba_functions" title="Link to this heading"></a></h1>
+<p>Functions accelerated with Numba for SELREM computation.</p>
+<p>These have been separated because Numba JIT-compiled functions can have issues with type hints. Keeping them here allows
+us to keep type hints in other parts of the  SELREM logic.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="sea_level_response.selrem.numba_functions.accumulate_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">accumulate_fields</span></code></a>(lat_arr, lon_arr, ...)</p></td>
+<td><p>Accumulate sea-level and deformation fields from mass change points using SELREM parameterizations.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.numba_functions.accumulate_fields">
+<span class="sig-prename descclassname"><span class="pre">sea_level_response.selrem.numba_functions.</span></span><span class="sig-name descname"><span class="pre">accumulate_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_err_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sin_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cos_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y21_real</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_unc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_unc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="Link to this definition"></a></dt>
+<dd><p>Accumulate sea-level and deformation fields from mass change points using SELREM parameterizations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat_arr</strong> (<em>np.ndarray</em>) – Array of latitudes (in radians) for mass change points.</p></li>
+<li><p><strong>lon_arr</strong> (<em>np.ndarray</em>) – Array of longitudes (in radians) for mass change points.</p></li>
+<li><p><strong>mass_arr</strong> (<em>np.ndarray</em>) – Array of mass changes (in Gt) for each point.</p></li>
+<li><p><strong>mass_err_arr</strong> (<em>np.ndarray</em>) – Array of mass change uncertainties (in Gt) for each point.</p></li>
+<li><p><strong>sin_lat</strong> (<em>np.ndarray</em>) – 2D array of sine of latitude for the target grid.</p></li>
+<li><p><strong>cos_lat</strong> (<em>np.ndarray</em>) – 2D array of cosine of latitude for the target grid.</p></li>
+<li><p><strong>lon_rad</strong> (<em>np.ndarray</em>) – 2D array of longitude (in radians) for the target grid.</p></li>
+<li><p><strong>y21_real</strong> (<em>np.ndarray</em>) – 2D array of real part of spherical harmonic Y21 for the target grid.</p></li>
+<li><p><strong>ndot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for ndot.</p></li>
+<li><p><strong>udot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for udot.</p></li>
+<li><p><strong>ndot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for ndot.</p></li>
+<li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for udot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing ndot_total, udot_total, rot_total, ndot_radial_unc_total,
+udot_radial_unc_total, ndot_vmb_unc_total, udot_vmb_unc_total arrays.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sea_level_response.selrem.data.html" class="btn btn-neutral float-left" title="sea_level_response.selrem.data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sea_level_response.selrem.selrem.html" class="btn btn-neutral float-right" title="sea_level_response.selrem.selrem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
