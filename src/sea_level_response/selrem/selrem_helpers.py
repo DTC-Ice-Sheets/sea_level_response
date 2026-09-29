@@ -136,10 +136,10 @@ def compute_mean_mass_balance_over_time_window(
     ----------
     ds : xr.Dataset
         Input mass balance dataset with a time dimension.
-    start_time : datetime | None, optional
+    start_time : datetime | None
         Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
         accordingly before computing the mean. Otherwise, the entire time range is used.
-    end_time : datetime | None, optional
+    end_time : datetime | None
         End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
         accordingly before computing the mean. Otherwise, the entire time range is used.
 

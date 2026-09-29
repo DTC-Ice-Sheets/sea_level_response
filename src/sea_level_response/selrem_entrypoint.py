@@ -40,15 +40,20 @@ def main(
         Start time for the time window.
     end_time : datetime
         End time for the time window.
-    scaling_factor : float
-        Scaling factor to apply to mass balance values.
     analysis_mode : Literal["global", "annual"]
         Whether to compute global mean SLR or annual gridded SLR.
+    output_path : Path
+        Where to save the output sea level rise zarr.
+    scaling_factor : float
+        Scaling factor to apply to mass balance values. Default is 1.0.
     coarsen_factor : int
         Spatial coarsening factor applied before flattening (gridded input only). Mass is summed (mass-conserving);
         coordinates are averaged; uncertainties are aggregated using RSS/N. Default 1 (no coarsening).
-    output_path : Path
-        Where to save the output sea level rise zarr.
+
+    Raises
+    ------
+    ValueError
+        If an unknown analysis mode is specified.
     """
     start_time = start_time.replace(tzinfo=None)
     end_time = end_time.replace(tzinfo=None)

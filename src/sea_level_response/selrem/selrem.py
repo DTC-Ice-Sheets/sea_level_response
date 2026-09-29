@@ -47,9 +47,9 @@ def run_emulator(
         SELREM uncertainty parameters for ndot.
     udot_unc : np.ndarray
         SELREM uncertainty parameters for udot.
-    target_res : float, optional
+    target_res : float
         Target resolution in degrees for the final output grid, by default 0.5.
-    compute_res : float, optional
+    compute_res : float
         Computation resolution in degrees for intermediate calculations, by default 5.0.
 
     Returns
@@ -231,7 +231,7 @@ def _prepare_vmb_points(
     ----------
     ds : xr.Dataset
         Input dataset containing mass balance data. Should contain mass balance in kilograms.
-    scale_factor : float, optional
+    scale_factor : float
         Factor to scale the mass balance values, by default 1.0
 
     Returns
@@ -340,7 +340,7 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0) -> xr.Dataset:
     ----------
     ds : xr.Dataset
         Single-snapshot VMB dataset (no 'year' dimension required).
-    scale_factor : float, optional
+    scale_factor : float
         Scaling factor for mass balance, default 1.0.
 
     Returns
