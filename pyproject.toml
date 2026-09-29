@@ -93,6 +93,7 @@ ignore = [
 ]
 "src/sea_level_response/selrem/numba_functions.py" = [
     "ANN", # Ignore missing type annotations in numba functions file (type hints cause issues with Numba JIT compilation)
+    "DOC", # Ignore missing docstring warnings in the specified file
 ]
 
 [tool.ruff.lint.pydocstyle]

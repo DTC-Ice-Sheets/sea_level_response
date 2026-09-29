@@ -39,8 +39,6 @@ def main(
         Target latitude for time series extraction.
     longitude : float | None
         Target longitude for time series extraction.
-    output_path : Path
-        Where to save the output time series data as JSON.
     """
     logger.info("Loading annual SLR dataset from: %s", annual_slr_gz_path)
     annual_slr_ds = xr.open_dataset(annual_slr_gz_path, engine="zarr")
