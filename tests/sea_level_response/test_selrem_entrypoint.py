@@ -30,16 +30,6 @@ def test_main_valid(
     simple_zarr_dataset: xr.Dataset,
     request,
 ) -> None:
-    """
-    Test main.
-
-    Parameters
-    ----------
-    caplog : pytest.LogCaptureFixture
-        The caplog fixture
-    tmp_path : Path
-        Temporary directory for output
-    """
     input_data = str(request.getfixturevalue(input_data_source))
     from sea_level_response.selrem_entrypoint import app
 

@@ -82,6 +82,7 @@ ignore = [
     "D212", # Multi-line docstring summary should start at the second line
     "D213", # Multi-line docstring summary should start at the first line
 ]
+exclude = 'src/sea_level_response/selrem/numba_functions\.py'
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
@@ -99,7 +100,7 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "numpy" # Accepts: "google", "numpy", or "pep257"
 [tool.bandit.assert_used]
-skips = ['*_test.py', '*/test_*.py', "src/sea_level_response/selrem/numba_functions.py"]
+skips = ['*_test.py', '*/test_*.py']
 
 [tool.pytest.ini_options]
 addopts = "--disable-warnings --cov sea_level_response --cov-fail-under=80"
