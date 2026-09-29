@@ -39,6 +39,11 @@ def main(
         Target latitude for time series extraction.
     longitude : float | None
         Target longitude for time series extraction.
+
+    Raises
+    ------
+    ValueError
+        If either latitude or longitude is not provided.
     """
     logger.info("Loading annual SLR dataset from: %s", annual_slr_gz_path)
     annual_slr_ds = xr.open_dataset(annual_slr_gz_path, engine="zarr")

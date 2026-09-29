@@ -49,6 +49,11 @@ def main(
     coarsen_factor : int
         Spatial coarsening factor applied before flattening (gridded input only). Mass is summed (mass-conserving);
         coordinates are averaged; uncertainties are aggregated using RSS/N. Default 1 (no coarsening).
+
+    Raises
+    ------
+    ValueError
+        If an unknown analysis mode is specified.
     """
     start_time = start_time.replace(tzinfo=None)
     end_time = end_time.replace(tzinfo=None)
