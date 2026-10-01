@@ -19,9 +19,11 @@ sea-level change. Consequently, the sea-level response close to a region of ice 
 the global mean response.
 
 This module provides two modes to explore sea-level changes:
+
 * **Current sea-level response** calculates sea-level responses from observational ice-sheet mass-balance data or
   mass-change data produced by other DTC Ice Sheets modules, e.g., the Ice-Sheet Mass-Balance module, or the 
   Ice-Shelves module.
+
 * **Future sea-level response** calculates sea-level response from ice-sheet projections, including model experiments
   from ISMIP6.
 
@@ -35,7 +37,7 @@ Scientific background on SLR calculations
 The DTC Ice Sheets uses **SELREM (SEa-Level Response EMulator)** to translate spatially distributed changes in
 land-ice mass into spatial patterns of sea-level change.
 
-For a detailed description of SELREM and its validation, see :cite:`Ludwigsen, C.B., Andersen, O.B., Marzeion, B. et al. Global and regional ocean mass budget closure since 2003. Nat Commun 15, 1416 (2024). https://doi.org/10.1038/s41467-024-45726-w`.
+For a detailed description of SELREM and its validation, see: Ludwigsen, C.B., Andersen, O.B., Marzeion, B. et al. Global and regional ocean mass budget closure since 2003. Nat Commun 15, 1416 (2024). https://doi.org/10.1038/s41467-024-45726-w.
 
 
 Current sea-level response
@@ -50,7 +52,6 @@ Under **Configure mass balance input data**, select the dataset to use as input.
 selection shows a short description of the dataset and the period for which data are available.
 
 Use the **time range** slider to select the analysis period and click **Load mass input data**.
-
 Once the data have loaded, the dashboard reports the mean mass balance and its uncertainty over the selected period.
 
 Calculate the global response
@@ -65,6 +66,7 @@ layers.
 The **Sea level response** layer shows the mean annual change in relative sea levels in mm per year for every location
 in the global oceans over the specified time period. Positive values are assiciated with rising sea levels; negative 
 values with falling sea levels.
+
 The **Sea level response uncertainty** layer shows the associated uncertainty to each value of relative sea level
 response. The uncertainty is also shown in average mm per year over the analysis period.
 
