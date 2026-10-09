@@ -7,6 +7,8 @@ import pandas as pd
 import pytest
 import xarray as xr
 
+from sea_level_response.config import MASS_BALANCE_COL_NAME, MASS_BALANCE_ERROR_COL_NAME
+
 
 @pytest.fixture
 def test_inputs_dir() -> Path:
@@ -244,3 +246,40 @@ def realistic_ocean_mask() -> tuple:
         ocean_mask[:, j] = np.random.random(nx) < ocean_fraction
 
     return ocean_mask.astype(int), lons, lats
+
+
+@pytest.fixture
+def gridded_and_expected_datasets() -> tuple[xr.Dataset, xr.Dataset]:
+
+    coarsen_factor = 2
+
+    input_dataset = xr.Dataset(
+        {
+            MASS_BALANCE_COL_NAME: (
+                ("time", "y", "x"),
+                np.arange(1, 17, dtype=np.float32).reshape(1, 4, 4),
+            )
+        },
+        coords={
+            "time": np.array(["2010-12-31"], dtype="datetime64[ns]"),
+            "y": [68.0, 69.0, 70.0, 71.0],
+            "x": [-50.0, -49.0, -48.0, -47.0],
+        },
+    ).rio.write_crs("EPSG:4326")
+    input_dataset["x"].attrs["grid_mapping"] = "spatial_ref"
+    coarsened_x = input_dataset["x"].to_numpy().reshape(-1, coarsen_factor).mean(axis=1)
+    coarsened_y = input_dataset["y"].to_numpy().reshape(-1, coarsen_factor).mean(axis=1)
+
+    expected_dataset = xr.Dataset(
+        {
+            MASS_BALANCE_COL_NAME: (("time", "point"), [[14.0, 22.0, 46.0, 54.0]]),
+            MASS_BALANCE_ERROR_COL_NAME: (("time", "point"), np.full((1, 4), np.nan, dtype=np.float32)),
+            "x": ("point", np.tile(coarsened_x, coarsened_y.size)),
+            "y": ("point", np.repeat(coarsened_y, coarsened_x.size)),
+        },
+        coords={
+            "time": input_dataset["time"].to_numpy(),
+            "point": np.arange(coarsened_x.size * coarsened_y.size),
+        },
+    )
+    return input_dataset, expected_dataset
