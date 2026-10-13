@@ -1,35 +1,34 @@
 # Use an official Python image as the base
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Set the working directory in the container. We use /github/workspace, as this is what the GitHub runners will override
 # the working directory to when running this container in GitHub Actions. This is also where the repository will be
 # copied to within the container during the checkout step (https://github.com/actions/checkout/issues/197).
 WORKDIR /app
 
-# Install system-level dependencies (if needed, e.g., for scientific packages)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libffi-dev \
-    libssl-dev \
-    curl \
-    git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install apt dependencies
+RUN apt-get update && apt-get install -y git curl
 
-# Install Poetry for Python dependency management
-RUN curl -sSL https://install.python-poetry.org | python3.12 -
+# Install and configure Poetry
+RUN curl -sSL https://install.python-poetry.org | python -
 ENV PATH="/root/.local/bin:$PATH"
-COPY pyproject.toml pyproject.toml
-
-# Ensure Poetry uses in-project virtualenvs
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
-COPY poetry.lock poetry.lock
+# Install Python dependencies
+COPY pyproject.toml poetry.lock /app/
+# GitHub token is required for private repositories
 RUN --mount=type=secret,id=github_token \
     mkdir -p /root && \
     echo "machine github.com login git password $(cat /run/secrets/github_token)" > /root/.netrc && \
     chmod 600 /root/.netrc
-# Install Python dependencies using Poetry
-RUN poetry install --with dev --no-root && rm -rf $POETRY_CACHE_DIR
+RUN poetry install --no-root --with deployment
+ENV PATH="/app/.venv/bin:$PATH"
 
-RUN rm -f /root/.netrc
+# Copy application code and install app
+COPY . /app/
+RUN poetry install --only-root
+
+# Remove GitHub token after install
+RUN rm /root/.netrc
+
+CMD ["poetry", "run", "dtc-wrapper"]

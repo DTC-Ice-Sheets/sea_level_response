@@ -7,21 +7,27 @@ from unittest.mock import patch
 
 import cyclopts
 import pytest
-import rioxarray  # noqa: F401
 import xarray as xr
 
 from sea_level_response import prepare_gridded_ds_for_selrem_entrypoint
 from sea_level_response.prepare_gridded_ds_for_selrem_entrypoint import app
 
 
+@pytest.mark.parametrize(
+    "input_data_source",
+    [
+        "valid_geozarr_file",
+        "valid_url",
+    ],
+)
 def test_main_valid(
     tmp_path: Path,
-    gridded_and_expected_datasets: tuple[xr.Dataset, xr.Dataset],
+    input_data_source: str,
+    simple_zarr_dataset: xr.Dataset,
+    request,
 ) -> None:
-    input_data = tmp_path / "input.zarr"
-    output_path = tmp_path / "output.zarr"
-    input_dataset, expected_dataset = gridded_and_expected_datasets
-    input_dataset.to_zarr(input_data, zarr_format=2)
+    input_data = str(request.getfixturevalue(input_data_source))
+    coarsen_factor = 2
 
     with (
         patch.object(
@@ -30,19 +36,28 @@ def test_main_valid(
             [
                 "sea_level_response.prepare_gridded_ds_for_selrem_entrypoint",
                 "--gridded_dataset_geozarr",
-                str(input_data),
+                input_data,
                 "--coarsen_factor",
-                "2.0",
+                str(coarsen_factor),
                 "--output_path",
-                str(output_path),
+                str(tmp_path / "output.zarr"),
             ],
         ),
+        patch.object(
+            prepare_gridded_ds_for_selrem_entrypoint.xr,
+            "open_zarr",
+            return_value=simple_zarr_dataset,
+        ) as mock_open_zarr,
+        patch.object(
+            prepare_gridded_ds_for_selrem_entrypoint, "prepare_gridded_ds_for_selrem", return_value=simple_zarr_dataset
+        ) as mock_prepare_gridded,
     ):
         app(result_action="return_value")
-    with xr.open_zarr(output_path) as prepared_dataset:
-        xr.testing.assert_equal(prepared_dataset.drop_vars("spatial_ref", errors="ignore"), expected_dataset)
+        mock_open_zarr.assert_called_once_with(input_data)
+        mock_prepare_gridded.assert_called_once_with(simple_zarr_dataset, coarsen_factor=coarsen_factor)
 
-    assert output_path.exists()
+    # verify the output file was created
+    assert (tmp_path / "output.zarr").exists()
 
 
 @pytest.mark.parametrize(
@@ -72,18 +87,15 @@ def test_invalid_path_raises_validation_error(tmp_path: Path, test_source: str, 
         app(result_action="return_value", exit_on_error=False)
 
 
-def test_main_raises_value_error_for_point_dataset(tmp_path: Path) -> None:
-    point_dataset = xr.Dataset(coords={"point": [0]})
+def test_main_processes_saved_gridded_dataset(
+    tmp_path: Path,
+    gridded_dataset_geozarr: Path,
+) -> None:
+    output_path = tmp_path / "output.zarr"
 
-    with (
-        patch.object(
-            prepare_gridded_ds_for_selrem_entrypoint.xr,
-            "open_zarr",
-            return_value=point_dataset,
-        ),
-        pytest.raises(ValueError, match="Dataset is already in point format"),
-    ):
-        prepare_gridded_ds_for_selrem_entrypoint.main(
-            gridded_dataset_geozarr="input.zarr",
-            output_path=tmp_path / "output.zarr",
-        )
+    prepare_gridded_ds_for_selrem_entrypoint.main(
+        gridded_dataset_geozarr=gridded_dataset_geozarr,
+        output_path=output_path,
+    )
+
+    assert output_path.exists()

@@ -36,7 +36,9 @@ def valid_geozarr_file(tmp_path: Path) -> Path:
         Path to the dummy GeoZarr store directory.
     """
     dummy_file = tmp_path / "dummy.zarr"
-    dummy_file.mkdir()  # Create the directory to ensure it exists
+    xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])}).rio.write_crs("EPSG:4326").to_zarr(
+        dummy_file, zarr_format=2
+    )
     return dummy_file
 
 
@@ -78,7 +80,13 @@ def invalid_path() -> str:
 @pytest.fixture
 def simple_zarr_dataset() -> xr.Dataset:
     """Provide a dummy xarray Dataset for testing."""
-    return xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])})
+    return xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])}).rio.write_crs("EPSG:4326")
+
+
+@pytest.fixture
+def point_zarr_dataset() -> xr.Dataset:
+    """Provide a dummy xarray Dataset for testing."""
+    return xr.Dataset({"point": (("point",), [0])}).rio.write_crs("EPSG:4326")
 
 
 @pytest.fixture
@@ -248,9 +256,7 @@ def realistic_ocean_mask() -> tuple:
     return ocean_mask.astype(int), lons, lats
 
 
-@pytest.fixture
-def gridded_and_expected_datasets() -> tuple[xr.Dataset, xr.Dataset]:
-
+def _create_gridded_and_expected_datasets() -> tuple[xr.Dataset, xr.Dataset]:
     coarsen_factor = 2
 
     input_dataset = xr.Dataset(
@@ -281,5 +287,21 @@ def gridded_and_expected_datasets() -> tuple[xr.Dataset, xr.Dataset]:
             "time": input_dataset["time"].to_numpy(),
             "point": np.arange(coarsened_x.size * coarsened_y.size),
         },
-    )
+    ).rio.write_crs("EPSG:4326")
     return input_dataset, expected_dataset
+
+
+@pytest.fixture
+def gridded_dataset_geozarr(tmp_path: Path) -> Path:
+    gridded_dataset, _ = _create_gridded_and_expected_datasets()
+    output_path = tmp_path / "gridded_dataset.zarr"
+    gridded_dataset.to_zarr(output_path, zarr_format=2)
+    return output_path
+
+
+@pytest.fixture
+def expected_dataset_geozarr(tmp_path: Path) -> Path:
+    _, expected_dataset = _create_gridded_and_expected_datasets()
+    output_path = tmp_path / "expected_dataset.zarr"
+    expected_dataset.to_zarr(output_path, zarr_format=2)
+    return output_path
