@@ -13,51 +13,28 @@ from sea_level_response import prepare_gridded_ds_for_selrem_entrypoint
 from sea_level_response.prepare_gridded_ds_for_selrem_entrypoint import app
 
 
-@pytest.mark.parametrize(
-    "input_data_source",
-    [
-        "valid_geozarr_file",
-        "valid_url",
-    ],
-)
 def test_main_valid(
     tmp_path: Path,
-    input_data_source: str,
-    simple_zarr_dataset: xr.Dataset,
-    request,
+    gridded_dataset_geozarr: Path,
+    expected_dataset_geozarr: Path,
 ) -> None:
-    input_data = str(request.getfixturevalue(input_data_source))
-    coarsen_factor = 2
+    coarsen_factor = 1.9
+    output_path = tmp_path / "output.zarr"
 
-    with (
-        patch.object(
-            sys,
-            "argv",
-            [
-                "sea_level_response.prepare_gridded_ds_for_selrem_entrypoint",
-                "--gridded_dataset_geozarr",
-                input_data,
-                "--coarsen_factor",
-                str(coarsen_factor),
-                "--output_path",
-                str(tmp_path / "output.zarr"),
-            ],
-        ),
-        patch.object(
-            prepare_gridded_ds_for_selrem_entrypoint.xr,
-            "open_zarr",
-            return_value=simple_zarr_dataset,
-        ) as mock_open_zarr,
-        patch.object(
-            prepare_gridded_ds_for_selrem_entrypoint, "prepare_gridded_ds_for_selrem", return_value=simple_zarr_dataset
-        ) as mock_prepare_gridded,
-    ):
-        app(result_action="return_value")
-        mock_open_zarr.assert_called_once_with(input_data)
-        mock_prepare_gridded.assert_called_once_with(simple_zarr_dataset, coarsen_factor=coarsen_factor)
+    app(
+        [
+            "--gridded_dataset_geozarr",
+            str(gridded_dataset_geozarr),
+            "--coarsen_factor",
+            str(coarsen_factor),
+            "--output_path",
+            str(output_path),
+        ],
+        result_action="return_value",
+    )
 
-    # verify the output file was created
-    assert (tmp_path / "output.zarr").exists()
+    with xr.open_zarr(output_path) as output_dataset, xr.open_zarr(expected_dataset_geozarr) as expected_dataset:
+        xr.testing.assert_identical(output_dataset, expected_dataset)
 
 
 def test_main_ignores_processing_step_when_point_data_supplied(
