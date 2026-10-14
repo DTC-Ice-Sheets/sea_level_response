@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.prepare_gridded_ds_for_selrem_entrypoint.html">sea_level_response.prepare_gridded_ds_for_selrem_entrypoint</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.data.html">sea_level_response.selrem.data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="sea_level_response.selrem.numba_functions.html">sea_level_response.selrem.numba_functions</a></li>
@@ -143,7 +144,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Single-snapshot VMB dataset (no ‘year’ dimension required).</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling factor for mass balance, default 1.0.</p></li>
+<li><p><strong>scale_factor</strong> (<em>float</em>) – Scaling factor for mass balance, default 1.0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -181,8 +182,8 @@
 <li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – 2D array representing the ocean mask (1 for ocean, 0 for land).</p></li>
 <li><p><strong>ndot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for ndot.</p></li>
 <li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for udot.</p></li>
-<li><p><strong>target_res</strong> (<em>float</em><em>, </em><em>optional</em>) – Target resolution in degrees for the final output grid, by default 0.5.</p></li>
-<li><p><strong>compute_res</strong> (<em>float</em><em>, </em><em>optional</em>) – Computation resolution in degrees for intermediate calculations, by default 5.0.</p></li>
+<li><p><strong>target_res</strong> (<em>float</em>) – Target resolution in degrees for the final output grid, by default 0.5.</p></li>
+<li><p><strong>compute_res</strong> (<em>float</em>) – Computation resolution in degrees for intermediate calculations, by default 5.0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

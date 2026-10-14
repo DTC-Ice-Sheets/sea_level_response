@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.prepare_gridded_ds_for_selrem_entrypoint.html">sea_level_response.prepare_gridded_ds_for_selrem_entrypoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.selrem_entrypoint</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.selrem_entrypoint.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
@@ -111,12 +112,15 @@
 <li><p><strong>mass_balance_geozarr</strong> (<a class="reference internal" href="sea_level_response.helpers.html#sea_level_response.helpers.ZarrType" title="sea_level_response.helpers.ZarrType"><em>ZarrType</em></a>) – Location of a GeoZarr dataset containing VMB data in kg. Can be a local path or a web URL.</p></li>
 <li><p><strong>start_time</strong> (<em>datetime</em>) – Start time for the time window.</p></li>
 <li><p><strong>end_time</strong> (<em>datetime</em>) – End time for the time window.</p></li>
-<li><p><strong>scaling_factor</strong> (<em>float</em>) – Scaling factor to apply to mass balance values.</p></li>
 <li><p><strong>analysis_mode</strong> (<em>Literal</em><em>[</em><em>&quot;global&quot;</em><em>, </em><em>&quot;annual&quot;</em><em>]</em>) – Whether to compute global mean SLR or annual gridded SLR.</p></li>
+<li><p><strong>output_path</strong> (<em>Path</em>) – Where to save the output sea level rise zarr.</p></li>
+<li><p><strong>scaling_factor</strong> (<em>float</em>) – Scaling factor to apply to mass balance values. Default is 1.0.</p></li>
 <li><p><strong>coarsen_factor</strong> (<em>int</em>) – Spatial coarsening factor applied before flattening (gridded input only). Mass is summed (mass-conserving);
 coordinates are averaged; uncertainties are aggregated using RSS/N. Default 1 (no coarsening).</p></li>
-<li><p><strong>output_path</strong> (<em>Path</em>) – Where to save the output sea level rise zarr.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an unknown analysis mode is specified.</p>
 </dd>
 </dl>
 </dd></dl>

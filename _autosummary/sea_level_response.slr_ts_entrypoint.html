@@ -51,6 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sea_level_response.prepare_gridded_ds_for_selrem_entrypoint.html">sea_level_response.prepare_gridded_ds_for_selrem_entrypoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem.html">sea_level_response.selrem</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.selrem_entrypoint.html">sea_level_response.selrem_entrypoint</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.slr_ts_entrypoint</a><ul>
@@ -112,8 +113,10 @@
 <li><p><strong>output_path</strong> (<em>Path</em>) – Where to save the output time series data as JSON.</p></li>
 <li><p><strong>latitude</strong> (<em>float</em><em> | </em><em>None</em>) – Target latitude for time series extraction.</p></li>
 <li><p><strong>longitude</strong> (<em>float</em><em> | </em><em>None</em>) – Target longitude for time series extraction.</p></li>
-<li><p><strong>output_path</strong> – Where to save the output time series data as JSON.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If either latitude or longitude is not provided.</p>
 </dd>
 </dl>
 </dd></dl>
