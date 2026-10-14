@@ -14,7 +14,7 @@ affect sea level globally and regionally.
 
 Loss of grounded ice adds water to the ocean, but the resulting sea-level change is not spatially uniform. 
 Changes in the gravitational attraction between an ice sheet and the ocean, deformation of the solid Earth (glacial
-isostatic adjustment, and redistribution of water due to the Earth's rotation produce characteristic spatial patterns in
+isostatic adjustment), and redistribution of water due to the Earth's rotation produce characteristic spatial patterns in
 sea-level change. Consequently, the sea-level response close to a region of ice loss can differ substantially from 
 the global mean response.
 
