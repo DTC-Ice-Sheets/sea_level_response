@@ -7,6 +7,8 @@ import pandas as pd
 import pytest
 import xarray as xr
 
+from sea_level_response.config import MASS_BALANCE_COL_NAME, MASS_BALANCE_ERROR_COL_NAME
+
 
 @pytest.fixture
 def test_inputs_dir() -> Path:
@@ -34,7 +36,9 @@ def valid_geozarr_file(tmp_path: Path) -> Path:
         Path to the dummy GeoZarr store directory.
     """
     dummy_file = tmp_path / "dummy.zarr"
-    dummy_file.mkdir()  # Create the directory to ensure it exists
+    xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])}).rio.write_crs("EPSG:4326").to_zarr(
+        dummy_file, zarr_format=2
+    )
     return dummy_file
 
 
@@ -76,7 +80,13 @@ def invalid_path() -> str:
 @pytest.fixture
 def simple_zarr_dataset() -> xr.Dataset:
     """Provide a dummy xarray Dataset for testing."""
-    return xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])})
+    return xr.Dataset({"dummy_var": (("x", "y"), [[1, 2], [3, 4]])}).rio.write_crs("EPSG:4326")
+
+
+@pytest.fixture
+def point_zarr_dataset() -> xr.Dataset:
+    """Provide a dummy xarray Dataset for testing."""
+    return xr.Dataset({"point": (("point",), [0])}).rio.write_crs("EPSG:4326")
 
 
 @pytest.fixture
@@ -244,3 +254,54 @@ def realistic_ocean_mask() -> tuple:
         ocean_mask[:, j] = np.random.random(nx) < ocean_fraction
 
     return ocean_mask.astype(int), lons, lats
+
+
+def _create_gridded_and_expected_datasets() -> tuple[xr.Dataset, xr.Dataset]:
+    coarsen_factor = 2
+
+    input_dataset = xr.Dataset(
+        {
+            MASS_BALANCE_COL_NAME: (
+                ("time", "y", "x"),
+                np.arange(1, 17, dtype=np.float32).reshape(1, 4, 4),
+            )
+        },
+        coords={
+            "time": np.array(["2010-12-31"], dtype="datetime64[ns]"),
+            "y": [68.0, 69.0, 70.0, 71.0],
+            "x": [-50.0, -49.0, -48.0, -47.0],
+        },
+    ).rio.write_crs("EPSG:4326")
+    input_dataset["x"].attrs["grid_mapping"] = "spatial_ref"
+    coarsened_x = input_dataset["x"].to_numpy().reshape(-1, coarsen_factor).mean(axis=1)
+    coarsened_y = input_dataset["y"].to_numpy().reshape(-1, coarsen_factor).mean(axis=1)
+
+    expected_dataset = xr.Dataset(
+        {
+            MASS_BALANCE_COL_NAME: (("time", "point"), [[14.0, 22.0, 46.0, 54.0]]),
+            MASS_BALANCE_ERROR_COL_NAME: (("time", "point"), np.full((1, 4), np.nan, dtype=np.float32)),
+            "x": ("point", np.tile(coarsened_x, coarsened_y.size)),
+            "y": ("point", np.repeat(coarsened_y, coarsened_x.size)),
+        },
+        coords={
+            "time": input_dataset["time"].to_numpy(),
+            "point": np.arange(coarsened_x.size * coarsened_y.size),
+        },
+    ).rio.write_crs("EPSG:4326")
+    return input_dataset, expected_dataset
+
+
+@pytest.fixture
+def gridded_dataset_geozarr(tmp_path: Path) -> Path:
+    gridded_dataset, _ = _create_gridded_and_expected_datasets()
+    output_path = tmp_path / "gridded_dataset.zarr"
+    gridded_dataset.to_zarr(output_path, zarr_format=2)
+    return output_path
+
+
+@pytest.fixture
+def expected_dataset_geozarr(tmp_path: Path) -> Path:
+    _, expected_dataset = _create_gridded_and_expected_datasets()
+    output_path = tmp_path / "expected_dataset.zarr"
+    expected_dataset.to_zarr(output_path, zarr_format=2)
+    return output_path

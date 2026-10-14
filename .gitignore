@@ -31,3 +31,6 @@ build/
 
 # Sphinx autosummary generated stubs
 docs/source/_autosummary/
+
+# local data
+.scrapy/
