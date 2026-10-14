@@ -18,113 +18,62 @@ isostatic adjustment, and redistribution of water due to the Earth's rotation pr
 sea-level change. Consequently, the sea-level response close to a region of ice loss can differ substantially from 
 the global mean response.
 
-This module provides two modes to explore sea-level changes:
+This module supports two primary workflows:
 
-* **Current sea-level response** calculates sea-level responses from observational ice-sheet mass-balance data or
-  mass-change data produced by other DTC Ice Sheets modules, e.g., the Ice-Sheet Mass-Balance module, or the 
-  Ice-Shelves module.
-
-* **Future sea-level response** calculates sea-level response from ice-sheet projections, including model experiments
-  from ISMIP6.
-
-For both modes, users can explore the spatial sea-level response on the interactive globe and extract a sea-level 
-time series at a specified latitude and longitude.
+* Calculation of gridded sea-level response fields from observed or simulated ice-sheet mass-balance datasets.
+* Extraction of sea-level response time series at user-specified locations from precomputed response fields.
 
 
 Scientific background on SLR calculations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The DTC Ice Sheets uses **SELREM (SEa-Level Response EMulator)** to translate spatially distributed changes in
-land-ice mass into spatial patterns of sea-level change.
+The DTC Ice Sheets uses **SELREM (SEa-Level Response EMulator)** to translate spatially distributed changes in land-ice mass into spatial patterns of sea-level change. It also computes the associated uncertainties for each of these fields.
+* The **sea level response** gives the mean annual change in relative sea levels in mm per year for every global field over the specified time period. Positive values are associated with rising sea levels; negative values with falling sea levels.
+* The **sea level response uncertainty** gives the associated uncertainty to each value of relative sea level response; also in average mm per year over the analysis period.
 
-For a detailed description of SELREM and its validation, see: Ludwigsen, C.B., Andersen, O.B., Marzeion, B. et al. Global and regional ocean mass budget closure since 2003. Nat Commun 15, 1416 (2024). https://doi.org/10.1038/s41467-024-45726-w.
-
-
-Current sea-level response
---------------------------
-
-The **Current SLR** view calculates sea-level responses from observed or previously computed ice-sheet mass changes.
-
-Select mass-balance data
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Under **Configure mass balance input data**, select the dataset to use as input. The information box below the 
-selection shows a short description of the dataset and the period for which data are available.
-
-Use the **time range** slider to select the analysis period and click **Load mass input data**.
-Once the data have loaded, the dashboard reports the mean mass balance and its uncertainty over the selected period.
-
-Calculate the global response
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Click **Explore global sea-level response** to calculate the spatial sea-level response from the selected 
-mass-change data.
-
-The resulting response is displayed on the interactive globe. Use the switches in the legend to enable or disable
-layers.
-
-The **Sea level response** layer shows the mean annual change in relative sea levels in mm per year for every location
-in the global oceans over the specified time period. Positive values are assiciated with rising sea levels; negative 
-values with falling sea levels.
-
-The **Sea level response uncertainty** layer shows the associated uncertainty to each value of relative sea level
-response. The uncertainty is also shown in average mm per year over the analysis period.
-
-
-Explore the response at a location
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To examine the sea-level response at a specific location, enter its **latitude** and **longitude** and click
-**Plot SLR at location**. The globe will zoom to the selected location and set a pin.
-
-The dashboard now also shows three time series:
-
-**Relative sea-level response** (rel)
-    This is the sea-level change relative to the solid Earth's surface and is the quantity most directly comparable to 
-    the sea level observed at the coast, for example by a tide gauge. It is also the one computed above.
-
-**Absolute sea-level response** (abs)
-    This is the sea-level change as an altimetry sensor (for example on a satellite) would measure.
-
-**Vertical deformation** (solid Earth)
-    This describes the vertical motion of the solid Earth that can be associated with the redistribution of land-ice
-    mass. Whenever we remove mass from e.g., continental crust, the load on that crust lightens and the solid Earth
-    will experience slight uplift. 
+The **relative sea-level response** (rel) is the sea-level change relative to the solid Earth's surface and is the quantity most directly comparable to the sea level observed at the coast, for example by a tide gauge. It is computed through the absolute sea-level change and the vertical deformation.
+The **absolute sea-level response** is the sea-level change as an altimetry sensor (for example on a satellite) would measure.
+The **vertical deformation** (solid Earth) describes the vertical motion of the solid Earth that can be associated with the redistribution of land-ice mass. Whenever we remove mass from e.g., continental crust, the load on that crust lightens and the solid Earth will experience slight uplift. 
 
 The relative sea-level response is calculated as
 
 .. math::
-   \Delta h_\mathrm{rel} = \Delta h_\mathrm{abs} - \Delta h_\mathrm{solid\ Earth}.
+
+   \Delta h_\mathrm{rel} =
+   \Delta h_\mathrm{abs} -
+   \Delta h_\mathrm{solid\ Earth}
+
+For a detailed description of SELREM and its validation, see: Ludwigsen, C.B., Andersen, O.B., Marzeion, B. et al. Global and regional ocean mass budget closure since 2003. Nat Commun 15, 1416 (2024). https://doi.org/10.1038/s41467-024-45726-w.
 
 
-Future sea-level response
--------------------------
+Repository Structure
+--------------------
 
-The **Future SLR** view calculates sea-level responses from projected ice-sheet changes simulated in ISMIP6 experiments.
+The primary functionality is exposed through two entry points:
 
+``sea_level_response.selrem_entrypoint``
+    Computes global sea-level response and associated uncertainty from an input mass-balance dataset.
 
-Select an ice-sheet projection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``sea_level_response.slr_ts_entrypoint``
+    Extracts sea-level response time series and its uncertainty at specified geographic coordinates from precomputed SLR fields.
 
-Select an **ice-sheet model** and an available **experiment**. Information about the selected model run and its
-available projection period is shown alongside the controls.
+Internally, the package uses SELREM to emulate the sea-level response to redistributed land-ice mass.
 
-Choose a projection period using the **Time range** slider and click **Load ISMIP6 data**.
+Data Flow
+---------
 
-The dashboard reports the mean mass balance calculated from the selected model output and period.
+The Sea-Level Response workflow consists of two processing stages.
 
+1. Compute sea-level response fields from a mass-balance input dataset.
+2. Extract sea-level response time series from the resulting gridded products.
 
-Inspect the projected ice-sheet change
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+And input datasets may originate from:
 
-Click **Visualise cumulative ice thickness change** to display an animation of the changing ice thickness over the 
-entire selected period. A timeline at the bottom gives you an overview of the current visualized time point.
+* Observational mass-balance products.
+* Outputs from other DTC Ice Sheets components.
+* Ice-sheet projection datasets such as ISMIP6.
 
-
-Explore the response at a location
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Here again, you can explore the time series of a specific location. More info, see above.
+The resulting outputs may be visualized in the DTC dashboard or through the prepared Jupyter Notebook workflows.
 
 Quick Start
 ===========
@@ -133,6 +82,11 @@ The package provides two CLI entry points, one to calculate global sea-level res
 and another to extract a sea-level time series at a specific location.
 
 Run either with ``--help`` to see all options.
+
+.. code-block:: bash
+
+   python -m sea_level_response.selrem_entrypoint --help
+   python -m sea_level_response.slr_ts_entrypoint --help
 
 Global SLR computation
 ----------------------
@@ -150,8 +104,7 @@ from a vertical mass balance (VMB) GeoZarr dataset:
        --output-path /path/to/output.zarr
 
 Set ``--analysis-mode global`` for a single global-mean value instead of a gridded annual series.
-Use ``--coarsen-factor`` to spatially coarsen gridded inputs, and ``--scaling-factor`` to scale the
-input mass balance values before computation.
+Use ``--coarsen-factor`` to spatially coarsen gridded inputs before computation.
 
 Location time-series extraction
 --------------------------------
@@ -168,6 +121,13 @@ from the annual, gridded output produced above:
        --output-path /path/to/timeseries.json
 
 The result is written as JSON containing the extracted time series for the given coordinates.
+
+Integration with the DTC Ice Sheets Dashboard
+---------------------------------------------
+
+The Sea-Level Response tab of the DTC Ice Sheets dashboard acts as a graphical client for the functionality provided by this repository.
+
+When a user requests a sea-level response calculation through the dashboard, the dashboard invokes the repository's backend workflows using the same processing pipeline described above.
 
 .. toctree::
    :maxdepth: 2
