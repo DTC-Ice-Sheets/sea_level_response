@@ -18,17 +18,16 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 COPY pyproject.toml poetry.lock /app/
 # GitHub token is required for private repositories
 RUN --mount=type=secret,id=github_token \
+    set -eu; \
+    trap 'rm -f /root/.netrc' EXIT; \
     mkdir -p /root && \
     echo "machine github.com login git password $(cat /run/secrets/github_token)" > /root/.netrc && \
-    chmod 600 /root/.netrc
-RUN poetry install --no-root --with deployment
+    chmod 600 /root/.netrc && \
+    poetry install --no-root --with deployment
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy application code and install app
 COPY . /app/
 RUN poetry install --only-root
-
-# Remove GitHub token after install
-RUN rm /root/.netrc
 
 CMD ["poetry", "run", "dtc-wrapper"]
