@@ -60,6 +60,26 @@ def test_main_valid(
     assert (tmp_path / "output.zarr").exists()
 
 
+def test_main_ignores_processing_step_when_point_data_supplied(
+    tmp_path: Path,
+    point_zarr_dataset: xr.Dataset,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    input_path = tmp_path / "point_input.zarr"
+    output_path = tmp_path / "point_output.zarr"
+    point_zarr_dataset.to_zarr(input_path, zarr_format=2)
+
+    prepare_gridded_ds_for_selrem_entrypoint.main(
+        gridded_dataset_geozarr=input_path,
+        output_path=output_path,
+        coarsen_factor=2,
+    )
+
+    output_dataset = xr.open_zarr(output_path)
+    xr.testing.assert_equal(output_dataset, point_zarr_dataset)
+    assert "Dataset is already in point format!! Not modifying it." in caplog.messages
+
+
 @pytest.mark.parametrize(
     "test_source",
     ["invalid_geozarr_path", "invalid_url"],
