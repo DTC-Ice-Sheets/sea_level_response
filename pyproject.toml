@@ -30,7 +30,7 @@ data_converter = { git = "https://github.com/DTC-Ice-Sheets/data_converter.git",
 pytest = "^9.0.2"
 typeguard = "^4.4.4"
 pre-commit = "^4.5"
-ruff = "^0.14.14"
+ruff = ">=0.14.14,<0.18.0"
 bandit = "^1.9.3"
 pytest-cov = "^7.0.0"
 sphinx = "^9.1.0"
