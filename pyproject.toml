@@ -24,7 +24,6 @@ xgboost = "^3.2.0"
 rioxarray = ">=0.15.0,<0.22.0"
 fsspec = "^2026.2.0"
 aiohttp = "^3.13.3"
-data_converter = { git = "https://github.com/DTC-Ice-Sheets/data_converter.git", tag = "0.0.48" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"

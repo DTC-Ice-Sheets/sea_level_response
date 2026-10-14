@@ -10,7 +10,6 @@ from sea_level_response.helpers import (
     _determine_spatial_coord_names,
     get_dataset_crs,
     path_or_web_url_validator,
-    write_to_geozarr_file,
 )
 
 
@@ -50,21 +49,6 @@ def test_get_dataset_crs_written_with_rioxarray():
 def test_determine_spatial_coord_names(coords, expected):
     ds = xr.Dataset(coords=coords)
     assert _determine_spatial_coord_names(ds) == expected
-
-
-def test_write_to_geozarr_file(tmp_path):
-    ds = xr.Dataset(
-        data_vars={"data": (["x", "y"], [[1, 2], [3, 4]])},
-        coords={"x": [0, 1], "y": [0, 1]},
-    )
-    ds = ds.rio.write_crs("EPSG:4326")
-    ds["time"] = xr.DataArray([1, 2], dims="time")
-    ds["time"].attrs = {"units": "days since 2000-01-01", "calendar": "standard"}
-
-    output_path = tmp_path / "test_output.zarr"
-    write_to_geozarr_file(ds, output_path)
-
-    assert output_path.exists()
 
 
 @pytest.mark.parametrize(
