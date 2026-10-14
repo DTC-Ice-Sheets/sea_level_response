@@ -91,10 +91,10 @@ exclude = 'src/sea_level_response/selrem/numba_functions\.py'
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
-    "T201", # Allow print statements in test files, as they are commonly used for debugging
-    "E402", # Allow 'import' statements not being at the top of the file (common in test files for clarity)
-    "S101", # Allow the use of 'assert' statements in test files (common practice in pytest)
-    "D103", # Ignore missing docstring warnings for functions in test files (commonly not required for small test functions)
+    "print", # Allow print statements in test files, as they are commonly used for debugging
+    "module-import-not-at-top-of-file", # Allow 'import' statements not being at the top of the file (common in test files for clarity)
+    "assert", # Allow the use of 'assert' statements in test files (common practice in pytest)
+    "undocumented-public-function", # Ignore missing docstring warnings for functions in test files (commonly not required for small test functions)
     "ANN",  # Ignore missing type annotations for functions in test files (commonly not required for small test functions)
 ]
 "src/sea_level_response/selrem/numba_functions.py" = [

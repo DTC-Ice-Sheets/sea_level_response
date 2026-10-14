@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import numpy as np
 import pytest
 import xarray as xr
 
@@ -83,8 +84,8 @@ def test_main_with_valid_inputs(caplog: pytest.LogCaptureFixture, tmp_path: Path
         # Verify preprocessing was called with correct parameters
         mock_preprocess.assert_called_once()
         call_kwargs = mock_preprocess.call_args.kwargs
-        assert call_kwargs["lat0"] == 55.0
-        assert call_kwargs["lon0"] == 0.0
+        assert np.isclose(call_kwargs["lat0"], 55.0)
+        assert np.isclose(call_kwargs["lon0"], 0.0)
         assert isinstance(call_kwargs["annual_slr_ds"], xr.Dataset)
 
     # Verify output file was created
@@ -93,8 +94,8 @@ def test_main_with_valid_inputs(caplog: pytest.LogCaptureFixture, tmp_path: Path
     # Verify JSON content
     with Path(output_file).open() as f:
         data = json.load(f)
-    assert data["years"] == [2020, 2021]
-    assert data["slope_sdot"] == 1.0
+    assert np.isclose(data["years"], [2020, 2021]).all()
+    assert np.isclose(data["slope_sdot"], 1.0)
     assert len(data["sdot_cumulative"]) == 2
 
     # Check log messages

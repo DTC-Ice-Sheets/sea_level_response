@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import pandas as pd
 import pytest
-import rioxarray  # noqa: F401
+import rioxarray  # ruff: ignore[unused-import]
 import xarray as xr
 from pyproj import CRS
 
