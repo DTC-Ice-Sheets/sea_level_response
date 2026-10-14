@@ -1,0 +1,40 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Python egg and distribution files
+*.egg
+*.egg-info/
+dist/
+build/
+*.tar.gz
+
+# Coverage reports
+.coverage
+*.coveragerc
+
+# pytest
+.pytest_cache/
+# ruff
+.ruff_cache/
+
+# Sphinx autosummary generated stubs
+docs/source/_autosummary/
+
+# local data
+.scrapy/
+
+# secrets
+.gh_token.txt
+.env

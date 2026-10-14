@@ -1,15 +1,14 @@
 """Command line interface entry point for the SELREM module --> for global computation only."""
 
 import logging
-from datetime import datetime
 from pathlib import Path
 
 import cyclopts
+import xarray as xr
 
 from sea_level_response.helpers import ZarrType
 from sea_level_response.monitoring import setup_logging
-from sea_level_response.selrem.selrem_helpers import slice_and_prepare_dataset
-from sea_level_response.selrem.selrem_input_prep import prepare_gridded_ds_for_selrem
+from sea_level_response.selrem.selrem_input_prep import get_dataset_crs, prepare_gridded_ds_for_selrem
 
 setup_logging()
 
@@ -20,9 +19,7 @@ app = cyclopts.App()
 
 @app.default
 def main(
-    mass_balance_geozarr: ZarrType,
-    start_time: datetime,
-    end_time: datetime,
+    gridded_dataset_geozarr: ZarrType,
     output_path: Path,
     coarsen_factor: int = 1,
 ) -> None:
@@ -33,14 +30,10 @@ def main(
 
     Parameters
     ----------
-    mass_balance_geozarr : ZarrType
+    gridded_dataset_geozarr : ZarrType
         Location of a GeoZarr dataset containing VMB data in kg. Can be a local path or a web URL.
-    start_time : datetime
-        Start time for the time window.
-    end_time : datetime
-        End time for the time window.
     output_path : Path
-        Where to save the output sea level rise zarr.
+        Where to save the generated point dataset zarr.
     coarsen_factor : int
         Spatial coarsening factor applied before flattening (gridded input only). Mass is summed (mass-conserving);
         coordinates are averaged; uncertainties are aggregated using RSS/N. Default 1 (no coarsening).
@@ -48,21 +41,24 @@ def main(
     Raises
     ------
     ValueError
-        If the dataset is already in point format.
+        If the coarsen factor is less than 1.
     """
-    start_time = start_time.replace(tzinfo=None)
-    end_time = end_time.replace(tzinfo=None)
-    ds = slice_and_prepare_dataset(
-        vmb_dataset_path=mass_balance_geozarr,
-        start_time=start_time,
-        end_time=end_time,
-    )
-    if "point" not in ds.dims:
+    if coarsen_factor < 1:
+        raise ValueError("Coarsen factor must be >= 1.")
+
+    ds = xr.open_zarr(gridded_dataset_geozarr)
+    # convert MB output to a dataset with the appropriate CRS metadata - needed for writing to GeoZarr
+    crs = get_dataset_crs(ds)
+    ds = ds.rio.write_crs(crs)
+    # print(f"Dataset CRS: {crs}")
+
+    if "point" in ds.dims:
+        logger.warning("Dataset is already in point format!! Not modifying it.")
+    else:
         ds = prepare_gridded_ds_for_selrem(ds, coarsen_factor=coarsen_factor)
         logger.info("Prepared dataset for SELREM and saving to output path %s.", output_path)
-    else:
-        raise ValueError("Dataset is already in point format! No actions to perform.")
 
+    # Save the dataset to the output path (whether or not any processing was done)
     ds.to_zarr(output_path, zarr_format=2)
 
 
