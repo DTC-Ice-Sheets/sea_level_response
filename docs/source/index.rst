@@ -28,8 +28,9 @@ Scientific background on SLR calculations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The DTC Ice Sheets uses **SELREM (SEa-Level Response EMulator)** to translate spatially distributed changes in land-ice mass into spatial patterns of sea-level change. It also computes the associated uncertainties for each of these fields.
-* The **sea level response** gives the mean annual change in relative sea levels in mm per year for every global field over the specified time period. Positive values are associated with rising sea levels; negative values with falling sea levels.
-* The **sea level response uncertainty** gives the associated uncertainty to each value of relative sea level response; also in average mm per year over the analysis period.
+
+* The **sea-level response** gives the mean annual change in relative sea level, in mm per year, at each global grid cell over the specified time period. Positive values indicate rising sea level; negative values indicate falling sea level.
+* The **sea-level response uncertainty** gives the uncertainty associated with each relative sea-level response value, also expressed as an average in mm per year over the analysis period.
 
 The **relative sea-level response** (rel) is the sea-level change relative to the solid Earth's surface and is the quantity most directly comparable to the sea level observed at the coast, for example by a tide gauge. It is computed through the absolute sea-level change and the vertical deformation.
 The **absolute sea-level response** is the sea-level change as an altimetry sensor (for example on a satellite) would measure.
