@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Annotated
 
 import pyproj
+import rioxarray  # ruff: ignore[unused-import]
 import xarray as xr
 from cyclopts import Parameter
 
@@ -60,8 +61,6 @@ def get_dataset_crs(dataset: xr.Dataset) -> pyproj.CRS | None:
     pyproj.CRS | None
         The CRS of the dataset.
     """
-    import rioxarray  # ruff: ignore[unused-import]
-
     # check for CRS written with rioxarray first
     try:
         rio_crs = dataset.rio.crs
