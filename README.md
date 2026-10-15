@@ -1,5 +1,6 @@
 ![Tests](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_test.yml/badge.svg)
 ![Deployment](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_deploy.yml/badge.svg)
+[![License](https://img.shields.io/github/license/DTC-Ice-Sheets/sea_level_response)](LICENSE)
 
 # sea_level_response
 
@@ -12,11 +13,11 @@ For an in-depth overview of the sea_level_response module please [read the docs]
 
 The documentation includes sections on:
 
-1. [getting started](https://dtc-ice-sheets.github.io/sea_level_response/)
-1. [Scientific overview](https://dtc-ice-sheets.github.io/sea_level_response/)
-1. [API reference](https://dtc-ice-sheets.github.io/sea_level_response/)
+1. [getting started](https://dtc-ice-sheets.github.io/sea_level_response/quick-start)
+1. [Scientific overview](https://dtc-ice-sheets.github.io/sea_level_response/overview)
+1. [API reference](https://dtc-ice-sheets.github.io/sea_level_response/api)
 
-For a more interactive way of exploring the system, please visit the twin's [dashboard](https://dashboards.dtc-ice-sheets.org/).
+For a more interactive way of exploring the system, please visit the digital twin's [dashboard](https://dashboards.dtc-ice-sheets.org/).
 
 ## Installation for Use
 
