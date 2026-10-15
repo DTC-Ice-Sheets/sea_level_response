@@ -158,11 +158,10 @@ jobs:
               version=$(poetry version --short)
               git commit -am "Bump version to $version"
               git tag "$version" || exit 1
-              git push --tags
-              git push origin main
+              git push --atomic origin main "refs/tags/$version"
           else
               git tag "$version" || exit 1
-              git push --tags
+              git push origin "refs/tags/$version"
           fi
           echo "full_version=$version" >> $GITHUB_OUTPUT
 
