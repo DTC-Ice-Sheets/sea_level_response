@@ -3,32 +3,44 @@ requires = ["poetry>=1.5"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "dtc_python_template"
-version = "0.0.64"
-description = "Template repository for DTC Ice Sheets Python Packages."
-authors = ["Earthwave Ltd <info@earthwave.co.uk>"]
+name = "sea_level_response"
+version = "1.0.0"
+description = "DTC-IS module to calculate sea-level changes arising from water mass inputs to the oceans."
+authors = ["DTC-IS consortium <support@dtc-ice-sheets.org>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/dtc-ice-sheets/dtc_python_template"
-packages = [{ include = "dtc_python_template", from = "src" }]
+homepage = "https://github.com/dtc-ice-sheets/sea_level_response"
+packages = [{ include = "sea_level_response", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
 numpy = "^2.4"
 cyclopts = "^4.5.1"
+scipy = "^1.16.3"
+xarray = "^2025.12.0"
+numba = "^0.66.0"
+zarr = "^3.1.5"
+xgboost = "^3.2.0"
+rioxarray = ">=0.15.0,<0.22.0"
+fsspec = "^2026.2.0"
+aiohttp = "^3.13.3"
+h5netcdf = {extras = ["h5pyd"], version = "^1.8.1"}
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.0.2"
+pytest = "^9.1.1"
 typeguard = "^4.4.4"
 pre-commit = "^4.5"
-ruff = "^0.14.14"
-bandit = "^1.9.3"
+ruff = "^0.17.0"
+bandit = "^1.9.4"
 pytest-cov = "^7.0.0"
 sphinx = "^9.1.0"
-sphinx-rtd-theme = "^3.0.2"
+sphinx-rtd-theme = "^3.1.0"
 sphinx-copybutton = "^0.5.2"
-commitizen = "^4.11.6"
+commitizen = "^4.19.2"
 pydoclint = "^0.8.3"
+
+[tool.poetry.group.deployment.dependencies]
+dtc-wrapper = { git = "https://github.com/DTC-Ice-Sheets/dtc_wrapper.git", tag = "0.0.40" }
 
 [tool.ruff]
 line-length = 120
@@ -38,33 +50,33 @@ target-version = "py312"
 preview = true
 select = [
     "T20", # Disallow print statements
-    "A",    # Ambiguity
-    "ANN",  # Annotations
-    "B",    # Bad practices
-    "C90",    # Complexity
-    "D",    # Documentation
-    "E",    # Errors
-    "F",    # Pyflakes (e.g. unused imports and vars)
-    "G",    # logging formatting
-    "I",    # Imports
-    "N",    # Naming
-    "Q",    # Quoting
-    "W",    # Warnings
-    "PT",   # pytest-style
-    "SIM",  # flake8-simplify
-    "C4",   # flake8-comprehensions
-    "ARG",  # flake8-unused-arguments
-    "PIE",  # flake8-pie
-    "RUF",  # Ruff-specific rules
-    "BLE",  # Blind except
-    "RET",  # Return statements
-    "PTH",  # Use pathlib
-    "PD",   # Pandas
+    "A",   # Ambiguity
+    "ANN", # Annotations
+    "B",   # Bad practices
+    "C90", # Complexity
+    "D",   # Documentation
+    "E",   # Errors
+    "F",   # Pyflakes (e.g. unused imports and vars)
+    "G",   # logging formatting
+    "I",   # Imports
+    "N",   # Naming
+    "Q",   # Quoting
+    "W",   # Warnings
+    "PT",  # pytest-style
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "ARG", # flake8-unused-arguments
+    "PIE", # flake8-pie
+    "RUF", # Ruff-specific rules
+    "BLE", # Blind except
+    "RET", # Return statements
+    "PTH", # Use pathlib
+    "PD",  # Pandas
 ]
 
 [tool.pydoclint]
-style='numpy'
-check_style_mismatch="true"
+style = 'numpy'
+check_style_mismatch = "true"
 
 mccabe = { max-complexity = 10 }
 
@@ -75,14 +87,19 @@ ignore = [
     "D212", # Multi-line docstring summary should start at the second line
     "D213", # Multi-line docstring summary should start at the first line
 ]
+exclude = 'src/sea_level_response/selrem/numba_functions\.py'
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
-    "T201", # Allow print statements in test files, as they are commonly used for debugging
-    "E402", # Allow 'import' statements not being at the top of the file (common in test files for clarity)
-    "S101", # Allow the use of 'assert' statements in test files (common practice in pytest)
-    "D103", # Ignore missing docstring warnings for functions in test files (commonly not required for small test functions)
+    "print", # Allow print statements in test files, as they are commonly used for debugging
+    "module-import-not-at-top-of-file", # Allow 'import' statements not being at the top of the file (common in test files for clarity)
+    "assert", # Allow the use of 'assert' statements in test files (common practice in pytest)
+    "undocumented-public-function", # Ignore missing docstring warnings for functions in test files (commonly not required for small test functions)
     "ANN",  # Ignore missing type annotations for functions in test files (commonly not required for small test functions)
+]
+"src/sea_level_response/selrem/numba_functions.py" = [
+    "ANN", # Ignore missing type annotations in numba functions file (type hints cause issues with Numba JIT compilation)
+    "DOC", # Ignore missing docstring warnings in the specified file
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -91,8 +108,8 @@ convention = "numpy" # Accepts: "google", "numpy", or "pep257"
 skips = ['*_test.py', '*/test_*.py']
 
 [tool.pytest.ini_options]
-addopts = "--disable-warnings --cov dtc_python_template --cov-fail-under=80"
-typeguard-packages = """dtc_python_template"""
+addopts = "--disable-warnings --cov sea_level_response --cov-fail-under=80"
+typeguard-packages = """sea_level_response"""
 typeguard-debug-instrumentation = true
 typeguard-forward-ref-policy = "ERROR"
 typeguard-collection-check-strategy = "ALL_ITEMS"

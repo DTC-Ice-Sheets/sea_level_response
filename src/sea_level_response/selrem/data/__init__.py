@@ -1,0 +1,1 @@
+"""Auxiliary data for SELREM."""

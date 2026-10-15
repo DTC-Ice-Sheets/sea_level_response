@@ -28,3 +28,9 @@ build/
 .pytest_cache/
 # ruff
 .ruff_cache/
+
+# Sphinx autosummary generated stubs
+docs/source/_autosummary/
+
+# local data
+.scrapy/
