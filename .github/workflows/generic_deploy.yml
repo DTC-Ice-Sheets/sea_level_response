@@ -172,10 +172,10 @@ jobs:
           tag_name: ${{ steps.push_tags.outputs.full_version }}
 
       # deploys to public PyPI - keep commented out until package is ready to be published
-      # - name: Publish package to PyPI
-      #   run: |
-      #     poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-      #     poetry publish
+      - name: Publish package to PyPI
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+          poetry publish
 
       - name: Build documentation
         run: |
