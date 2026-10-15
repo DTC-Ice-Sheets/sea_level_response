@@ -4,11 +4,10 @@ import logging
 from pathlib import Path
 from typing import Annotated
 
-import numcodecs
 import pyproj
+import rioxarray  # ruff: ignore[unused-import]
 import xarray as xr
 from cyclopts import Parameter
-from data_converter.geo_zarr import GeoZarr, ZarrStorage
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +61,6 @@ def get_dataset_crs(dataset: xr.Dataset) -> pyproj.CRS | None:
     pyproj.CRS | None
         The CRS of the dataset.
     """
-    import rioxarray  # ruff: ignore[unused-import]
-
     # check for CRS written with rioxarray first
     try:
         rio_crs = dataset.rio.crs
@@ -93,35 +90,6 @@ def get_dataset_crs(dataset: xr.Dataset) -> pyproj.CRS | None:
     if crs_wkt is None and (crs := dataset[example_data_var].attrs.get("_CRS")) is not None:
         crs_wkt = crs.get("wkt", None)
     return pyproj.CRS(crs_wkt) if crs_wkt else None
-
-
-def write_to_geozarr_file(data: xr.Dataset, output_path: Path) -> None:
-    """
-    Write a GeoZarr-compliant dataset to a file.
-
-    Parameters
-    ----------
-    data : xr.Dataset
-        Geo-Zarr-compliant dataset to be written to file.
-    output_path : Path
-        Path where the GeoZarr file will be saved.
-    """
-    logger.info("Writing GeoZarr to directory at %s...", output_path)
-    dataset_crs = get_dataset_crs(data)
-    if dataset_crs is None:
-        # TODO: Remove once CRS is not mandatory in GeoZarr converter class
-        logger.warning("Dataset does not contain CRS information, saving to file without GeoZarr converter.")
-        if "time" in data:
-            for k in ["units", "calendar"]:
-                if k in data["time"].attrs:
-                    data["time"].attrs.pop(k)
-        encoding = {var: {"compressor": numcodecs.Blosc(cname="zstd", clevel=3, shuffle=2)} for var in data.data_vars}
-        data.to_zarr(output_path, mode="w", encoding=encoding)
-    else:
-        geozarr_writer = GeoZarr(storage_type=ZarrStorage.local_store, storage_directory=output_path, crs=dataset_crs)
-        geozarr_writer.convert_xarray_dataset_to_geo_zarr(dataset=data)
-
-    logger.info("GeoZarr written successfully.")
 
 
 def path_or_web_url_validator(type_: object, path_or_url: Path | str) -> str:  # ruff: ignore[unused-function-argument]
