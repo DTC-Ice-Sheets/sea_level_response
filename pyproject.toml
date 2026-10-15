@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "sea_level_response"
-version = "0.0.5"
+version = "0.0.6"
 description = "DTC-IS module to calculate sea-level changes arising from water mass inputs to the oceans."
 authors = ["DTC-IS consortium <support@dtc-ice-sheets.org>"]
 license = "MIT"
