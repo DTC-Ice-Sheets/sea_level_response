@@ -1,6 +1,6 @@
 ![Tests](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_test.yml/badge.svg)
 ![Deployment](https://github.com/dtc-ice-sheets/sea_level_response/actions/workflows/sea_level_response_deploy.yml/badge.svg)
-[![License](https://img.shields.io/github/license/DTC-Ice-Sheets/sea_level_response)](LICENSE)
+[![License](https://github.com/DTC-Ice-Sheets/sea_level_response/blob/main/LICENSE)](LICENSE)
 
 # sea_level_response
 

@@ -1,1 +1,1 @@
-"""Package init."""
+"""SELREM package."""
