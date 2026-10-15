@@ -13,9 +13,9 @@ For an in-depth overview of the sea_level_response module please [read the docs]
 
 The documentation includes sections on:
 
-1. [getting started](https://dtc-ice-sheets.github.io/sea_level_response/quick-start)
-1. [Scientific overview](https://dtc-ice-sheets.github.io/sea_level_response/overview)
-1. [API reference](https://dtc-ice-sheets.github.io/sea_level_response/api)
+1. [getting started](https://dtc-ice-sheets.github.io/sea_level_response/quick-start.html)
+1. [Scientific overview](https://dtc-ice-sheets.github.io/sea_level_response/overview.html)
+1. [API reference](https://dtc-ice-sheets.github.io/sea_level_response/api.html)
 
 For a more interactive way of exploring the system, please visit the digital twin's [dashboard](https://dashboards.dtc-ice-sheets.org/).
 
