@@ -45,16 +45,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick-start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.config.html">sea_level_response.config</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.helpers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.helpers.ZarrType"><code class="docutils literal notranslate"><span class="pre">ZarrType</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.helpers.get_dataset_crs"><code class="docutils literal notranslate"><span class="pre">get_dataset_crs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.helpers.path_or_web_url_validator"><code class="docutils literal notranslate"><span class="pre">path_or_web_url_validator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.helpers.write_to_geozarr_file"><code class="docutils literal notranslate"><span class="pre">write_to_geozarr_file()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
@@ -106,14 +106,11 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.helpers.path_or_web_url_validator" title="sea_level_response.helpers.path_or_web_url_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_or_web_url_validator</span></code></a>(type_, path_or_url)</p></td>
 <td><p>Validate that the provided path is either a valid local path or a web URL.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.helpers.write_to_geozarr_file" title="sea_level_response.helpers.write_to_geozarr_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_to_geozarr_file</span></code></a>(data, output_path)</p></td>
-<td><p>Write a GeoZarr-compliant dataset to a file.</p></td>
-</tr>
 </tbody>
 </table>
 <dl class="py type">
 <dt class="sig sig-object py" id="sea_level_response.helpers.ZarrType">
-<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">ZarrType</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Annotated[str,</span> <span class="pre">Parameter(validator=(&lt;function</span> <span class="pre">path_or_web_url_validator</span> <span class="pre">at</span> <span class="pre">0x7f6fd9529f80&gt;,))]</span></span><a class="headerlink" href="#sea_level_response.helpers.ZarrType" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">ZarrType</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Annotated[str,</span> <span class="pre">Parameter(validator=(&lt;function</span> <span class="pre">path_or_web_url_validator</span> <span class="pre">at</span> <span class="pre">0x7f70728cd580&gt;,))]</span></span><a class="headerlink" href="#sea_level_response.helpers.ZarrType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -158,20 +155,6 @@ data on EODS).</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If the provided path is neither a valid local path nor a web URL.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="sea_level_response.helpers.write_to_geozarr_file">
-<span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">write_to_geozarr_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sea_level_response.helpers.write_to_geozarr_file" title="Link to this definition"></a></dt>
-<dd><p>Write a GeoZarr-compliant dataset to a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>xr.Dataset</em>) – Geo-Zarr-compliant dataset to be written to file.</p></li>
-<li><p><strong>output_path</strong> (<em>Path</em>) – Path where the GeoZarr file will be saved.</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>

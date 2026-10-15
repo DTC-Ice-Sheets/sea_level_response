@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview &mdash; DTC Ice Sheets: Sea Level Response  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start" href="quick-start.html" />
+    <link rel="prev" title="DTC Ice Sheets: Sea-Level Response" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DTC Ice Sheets: Sea Level Response
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#scientific-background-on-slr-calculations">Scientific background on SLR calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#repository-structure">Repository Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-the-dtc-ice-sheets-dashboard">Integration with the DTC Ice Sheets Dashboard</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DTC Ice Sheets: Sea Level Response</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<p>The <strong>Sea-Level Response</strong> (SLR) module of the DTC Ice Sheets allows users to explore how changes in ice-sheet mass
+affect sea level globally and regionally.</p>
+<p>Loss of grounded ice adds water to the ocean, but the resulting sea-level change is not spatially uniform.
+Changes in the gravitational attraction between an ice sheet and the ocean, deformation of the solid Earth (glacial
+isostatic adjustment), and redistribution of water due to the Earth’s rotation produce characteristic spatial patterns in
+sea-level change. Consequently, the sea-level response close to a region of ice loss can differ substantially from
+the global mean response.</p>
+<p>This module supports two primary workflows:</p>
+<ul class="simple">
+<li><p>Calculation of gridded sea-level response fields from observed or simulated ice-sheet mass-balance datasets.</p></li>
+<li><p>Extraction of sea-level response time series at user-specified locations from precomputed response fields.</p></li>
+</ul>
+<section id="scientific-background-on-slr-calculations">
+<h2>Scientific background on SLR calculations<a class="headerlink" href="#scientific-background-on-slr-calculations" title="Link to this heading"></a></h2>
+<p>The DTC Ice Sheets uses <strong>SELREM (SEa-Level Response EMulator)</strong> to translate spatially distributed changes in land-ice mass into spatial patterns of sea-level change. It also computes the associated uncertainties for each of these fields.</p>
+<ul class="simple">
+<li><p>The <strong>sea-level response</strong> gives the mean annual change in relative sea level, in mm per year, at each global grid cell over the specified time period. Positive values indicate rising sea level; negative values indicate falling sea level.</p></li>
+<li><p>The <strong>sea-level response uncertainty</strong> gives the uncertainty associated with each relative sea-level response value, also expressed as an average in mm per year over the analysis period.</p></li>
+</ul>
+<p>The <strong>relative sea-level response</strong> (rel) is the sea-level change relative to the solid Earth’s surface and is the quantity most directly comparable to the sea level observed at the coast, for example by a tide gauge. It is computed through the absolute sea-level change and the vertical deformation.
+The <strong>absolute sea-level response</strong> is the sea-level change as an altimetry sensor (for example on a satellite) would measure.
+The <strong>vertical deformation</strong> (solid Earth) describes the vertical motion of the solid Earth that can be associated with the redistribution of land-ice mass. Whenever we remove mass from e.g., continental crust, the load on that crust lightens and the solid Earth will experience slight uplift.</p>
+<p>The relative sea-level response is calculated as</p>
+<div class="math notranslate nohighlight">
+\[\Delta h_\mathrm{rel} =
+\Delta h_\mathrm{abs} -
+\Delta h_\mathrm{solid\ Earth}\]</div>
+<p>For a detailed description of SELREM and its validation, see: Ludwigsen, C.B., Andersen, O.B., Marzeion, B. et al. Global and regional ocean mass budget closure since 2003. Nat Commun 15, 1416 (2024). <a class="reference external" href="https://doi.org/10.1038/s41467-024-45726-w">https://doi.org/10.1038/s41467-024-45726-w</a>.</p>
+</section>
+<section id="repository-structure">
+<h2>Repository Structure<a class="headerlink" href="#repository-structure" title="Link to this heading"></a></h2>
+<p>The primary functionality is exposed through two entry points:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sea_level_response.selrem_entrypoint</span></code></dt><dd><p>Computes global sea-level response and associated uncertainty from an input mass-balance dataset.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sea_level_response.slr_ts_entrypoint</span></code></dt><dd><p>Extracts sea-level response time series and its uncertainty at specified geographic coordinates from precomputed SLR fields.</p>
+</dd>
+</dl>
+<p>Internally, the package uses SELREM to emulate the sea-level response to redistributed land-ice mass.</p>
+</section>
+<section id="data-flow">
+<h2>Data Flow<a class="headerlink" href="#data-flow" title="Link to this heading"></a></h2>
+<p>The Sea-Level Response workflow consists of two processing stages.</p>
+<ol class="arabic simple">
+<li><p>Compute sea-level response fields from a mass-balance input dataset.</p></li>
+<li><p>Extract sea-level response time series from the resulting gridded products.</p></li>
+</ol>
+<p>Input datasets may originate from:</p>
+<ul class="simple">
+<li><p>Observational mass-balance products.</p></li>
+<li><p>Outputs from other DTC Ice Sheets components.</p></li>
+<li><p>Ice-sheet projection datasets such as ISMIP6.</p></li>
+</ul>
+<p>The resulting outputs may be visualized in the DTC dashboard or through the prepared Jupyter Notebook workflows.</p>
+</section>
+<section id="integration-with-the-dtc-ice-sheets-dashboard">
+<h2>Integration with the DTC Ice Sheets Dashboard<a class="headerlink" href="#integration-with-the-dtc-ice-sheets-dashboard" title="Link to this heading"></a></h2>
+<p>The Sea-Level Response tab of the DTC Ice Sheets dashboard acts as a graphical client for the functionality provided by this repository.</p>
+<p>When a user requests a sea-level response calculation through the dashboard, the dashboard invokes the repository’s backend workflows using the same processing pipeline described above.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="DTC Ice Sheets: Sea-Level Response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quick-start.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
