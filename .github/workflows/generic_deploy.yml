@@ -171,10 +171,11 @@ jobs:
           body: "This is an automatically generated build release.\nPlease view CHANGELOG.md for additional details."
           tag_name: ${{ steps.push_tags.outputs.full_version }}
 
-      # deploys to public PyPI - keep commented out until package is ready to be published
+      # deploys to public PyPI - rebuilds first (to incorporate the bumped version number)
       - name: Publish package to PyPI
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+          poetry build
           poetry publish
 
       - name: Build documentation
