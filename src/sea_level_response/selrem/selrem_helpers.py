@@ -24,16 +24,16 @@ def load_selrem_parameters() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.nda
     Returns
     -------
     tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-        ndot_fit, udot_fit, ndot_unc, udot_unc arrays.
+        gdot_fit, udot_fit, gdot_unc, udot_unc arrays.
     """
     with Path(SELREM_PARAMS_PATH).open("r") as f:
         params = json.load(f)
-    ndot_fit = np.array(params["ndot_fit"])
-    udot_fit = np.array(params["udot_fit"])
-    ndot_unc = np.array(params["ndot_unc"])
-    udot_unc = np.array(params["udot_unc"])
-
-    return ndot_fit, udot_fit, ndot_unc, udot_unc
+    return (
+        np.array(params["gdot_fit"], dtype=np.float64),
+        np.array(params["udot_fit"], dtype=np.float64),
+        np.array(params["gdot_unc"], dtype=np.float64),
+        np.array(params["udot_unc"], dtype=np.float64),
+    )
 
 
 def load_ocean_mask() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -53,39 +53,39 @@ def load_ocean_mask() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     return ocean_mask, lons, lats
 
 
-def reproject_ocean_mask(
-    ocean_mask: np.ndarray,
-    mask_lons: np.ndarray,
-    mask_lats: np.ndarray,
-    target_lons: np.ndarray,
-    target_lats: np.ndarray,
-) -> np.ndarray:
-    """
-    Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
+# def reproject_ocean_mask(
+#     ocean_mask: np.ndarray,
+#     mask_lons: np.ndarray,
+#     mask_lats: np.ndarray,
+#     target_lons: np.ndarray,
+#     target_lats: np.ndarray,
+# ) -> np.ndarray:
+#     """
+#     Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
 
-    Parameters
-    ----------
-    ocean_mask : np.ndarray
-        The original ocean mask array.
-    mask_lons : np.ndarray
-        Longitudes of the original mask grid.
-    mask_lats : np.ndarray
-        Latitudes of the original mask grid.
-    target_lons : np.ndarray
-        Target longitudes for the new grid.
-    target_lats : np.ndarray
-        Target latitudes for the new grid.
+#     Parameters
+#     ----------
+#     ocean_mask : np.ndarray
+#         The original ocean mask array.
+#     mask_lons : np.ndarray
+#         Longitudes of the original mask grid.
+#     mask_lats : np.ndarray
+#         Latitudes of the original mask grid.
+#     target_lons : np.ndarray
+#         Target longitudes for the new grid.
+#     target_lats : np.ndarray
+#         Target latitudes for the new grid.
 
-    Returns
-    -------
-    np.ndarray
-        The reprojected ocean mask on the target grid.
-    """
-    lon2d, lat2d = np.meshgrid(target_lons, target_lats, indexing="ij")
-    points = np.stack([lon2d.flatten(), lat2d.flatten()], axis=-1)
-    interp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
-    ocean_mask_reprojected = interp(points).reshape(lon2d.shape)
-    return (ocean_mask_reprojected > 0.5).astype(int)
+#     Returns
+#     -------
+#     np.ndarray
+#         The reprojected ocean mask on the target grid.
+#     """
+#     lon2d, lat2d = np.meshgrid(target_lons, target_lats, indexing="ij")
+#     points = np.stack([lon2d.flatten(), lat2d.flatten()], axis=-1)
+#     interp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
+#     ocean_mask_reprojected = interp(points).reshape(lon2d.shape)
+#     return (ocean_mask_reprojected > 0.5).astype(int)
 
 
 def slice_and_prepare_dataset(
@@ -126,45 +126,45 @@ def slice_and_prepare_dataset(
     return ds
 
 
-def compute_mean_mass_balance_over_time_window(
-    ds: xr.Dataset, start_time: datetime | None = None, end_time: datetime | None = None
-) -> xr.Dataset:
-    """
-    Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.
+# def compute_mean_mass_balance_over_time_window(
+#     ds: xr.Dataset, start_time: datetime | None = None, end_time: datetime | None = None
+# ) -> xr.Dataset:
+#     """
+#     Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.
 
-    Parameters
-    ----------
-    ds : xr.Dataset
-        Input mass balance dataset with a time dimension.
-    start_time : datetime | None
-        Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
-        accordingly before computing the mean. Otherwise, the entire time range is used.
-    end_time : datetime | None
-        End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
-        accordingly before computing the mean. Otherwise, the entire time range is used.
+#     Parameters
+#     ----------
+#     ds : xr.Dataset
+#         Input mass balance dataset with a time dimension.
+#     start_time : datetime | None
+#         Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+#         accordingly before computing the mean. Otherwise, the entire time range is used.
+#     end_time : datetime | None
+#         End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+#         accordingly before computing the mean. Otherwise, the entire time range is used.
 
-    Returns
-    -------
-    xr.Dataset
-        Dataset with the same spatial dimensions ('point', 'x', 'y'), where the 'time' dimension has been removed and
-        each variable represents the mean value across the specified years.
-    """
-    if start_time and end_time:
-        ds = ds.sel(time=slice(start_time, end_time))
-    return xr.Dataset(
-        {
-            MASS_BALANCE_COL_NAME: (["point"], ds[MASS_BALANCE_COL_NAME].mean(dim="time", skipna=True).data),
-            MASS_BALANCE_ERROR_COL_NAME: (
-                ["point"],
-                ds[MASS_BALANCE_ERROR_COL_NAME].mean(dim="time", skipna=True).data,
-            ),
-        },
-        coords={
-            "y": ds["y"].data,
-            "x": ds["x"].data,
-            "point": ds["point"].data,
-        },
-    )
+#     Returns
+#     -------
+#     xr.Dataset
+#         Dataset with the same spatial dimensions ('point', 'x', 'y'), where the 'time' dimension has been removed and
+#         each variable represents the mean value across the specified years.
+#     """
+#     if start_time and end_time:
+#         ds = ds.sel(time=slice(start_time, end_time))
+#     return xr.Dataset(
+#         {
+#             MASS_BALANCE_COL_NAME: (["point"], ds[MASS_BALANCE_COL_NAME].mean(dim="time", skipna=True).data),
+#             MASS_BALANCE_ERROR_COL_NAME: (
+#                 ["point"],
+#                 ds[MASS_BALANCE_ERROR_COL_NAME].mean(dim="time", skipna=True).data,
+#             ),
+#         },
+#         coords={
+#             "y": ds["y"].data,
+#             "x": ds["x"].data,
+#             "point": ds["point"].data,
+#         },
+#     )
 
 
 def preprocess_location_timeseries(
