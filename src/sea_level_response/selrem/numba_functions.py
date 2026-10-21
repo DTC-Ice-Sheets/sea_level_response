@@ -13,7 +13,7 @@ from numba import njit, prange
 
 # Keep this Numba kernel unannotated: pytest-typeguard instruments annotations such as np.ndarray with runtime
 # TypeCheckMemo checks, which Numba cannot type in nopython mode after @njit compilation.
-@njit(parallel=False, fastmath=True)
+@njit(parallel=True, fastmath=True)
 def accumulate_fields(
     lat_p_rad,
     lon_p_rad,

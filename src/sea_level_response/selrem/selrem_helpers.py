@@ -17,6 +17,111 @@ from sea_level_response.config import (
 )
 
 
+def wrap180(lon_deg: np.ndarray | float) -> np.ndarray | float:
+    """
+    Wrap any longitude (e.g. 0-360) to [-180, 180).
+
+    Parameters
+    ----------
+    lon_deg : np.ndarray
+        Longitude in decimal degrees
+
+    Returns
+    -------
+    np.ndarray
+        Longitude in decimal degrees wrapped to [-180, 180)
+    """
+    return ((lon_deg + 180.0) % 360.0) - 180.0
+
+
+def build_lonlat(
+    res_deg: float,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Build a regular global grid: lon = -180 to 180 (periodic), lat = 90 to -90.
+
+    Parameters
+    ----------
+    res_deg : float
+        Grid resolution in decimal degrees
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        (Longitude, Latitude, 2D Longitude, 2D Latitude)
+    """
+    nlon = int(360 / res_deg)
+    nlat = int(180 / res_deg)
+    lons = np.linspace(-180, 180, nlon, endpoint=False)
+    lats = np.linspace(90, -90, nlat)
+    lon2d, lat2d = np.meshgrid(lons, lats, indexing="ij")
+    return lons, lats, lon2d, lat2d
+
+
+def interp_ocean_mask_to(target_lons: np.ndarray, target_lats: np.ndarray, ocean_mask: np.ndarray) -> np.ndarray:
+    """
+    Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
+
+    Parameters
+    ----------
+    target_lons : np.ndarray
+        Target longitudes for the new grid
+    target_lats : np.ndarray
+        Target latitudes for the new grid
+    ocean_mask : np.ndarray
+        Spatial grid masking ocean cells
+
+    Returns
+    -------
+    np.ndarray
+        The reprojected ocean mask on the target grid.
+    """
+    nlon_m, nlat_m = ocean_mask.shape
+    mask_lons = np.linspace(-180, 180, nlon_m, endpoint=False)
+    mask_lats = np.linspace(90, -90, nlat_m)
+
+    itp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
+    lon2d_t, lat2d_t = np.meshgrid(target_lons, target_lats, indexing="ij")
+    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
+    m = itp(pts).reshape(lon2d_t.shape)
+    return (m > 0.5).astype(np.int8)
+
+
+def interp_to_grid(
+    field: np.ndarray,
+    lons_src: np.ndarray,
+    lats_src: np.ndarray,
+    lon2d_t: np.ndarray,
+    lat2d_t: np.ndarray,
+) -> np.ndarray:
+    """
+    Linearly interpolate a (lon, lat) field to the target grid.
+
+    Points outside the source grid become NaN.
+
+    Parameters
+    ----------
+    field : np.ndarray
+        2D field on the source grid, shape (nlon, nlat)
+    lons_src : np.ndarray
+        Longitudes of the source grid in decimal degrees
+    lats_src : np.ndarray
+        Latitudes of the source grid in decimal degrees
+    lon2d_t : np.ndarray
+        2D longitudes of the target grid in decimal degrees
+    lat2d_t : np.ndarray
+        2D latitudes of the target grid in decimal degrees
+
+    Returns
+    -------
+    np.ndarray
+        The field interpolated onto the target grid, same shape as ``lon2d_t``.
+    """
+    itp = RegularGridInterpolator((lons_src, lats_src), field, bounds_error=False, fill_value=np.nan)
+    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
+    return itp(pts).reshape(lon2d_t.shape)
+
+
 def load_selrem_parameters() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Load SELREM parameters from a JSON file.
@@ -28,12 +133,12 @@ def load_selrem_parameters() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.nda
     """
     with Path(SELREM_PARAMS_PATH).open("r") as f:
         params = json.load(f)
-    return (
-        np.array(params["gdot_fit"], dtype=np.float64),
-        np.array(params["udot_fit"], dtype=np.float64),
-        np.array(params["gdot_unc"], dtype=np.float64),
-        np.array(params["udot_unc"], dtype=np.float64),
-    )
+    gdot_fit = np.array(params["gdot_fit"], dtype=np.float64)
+    udot_fit = np.array(params["udot_fit"], dtype=np.float64)
+    gdot_unc = np.array(params["gdot_unc"], dtype=np.float64)
+    udot_unc = np.array(params["udot_unc"], dtype=np.float64)
+
+    return gdot_fit, udot_fit, gdot_unc, udot_unc
 
 
 def load_ocean_mask() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -51,41 +156,6 @@ def load_ocean_mask() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     lats = ds["lat"].to_numpy()
 
     return ocean_mask, lons, lats
-
-
-# def reproject_ocean_mask(
-#     ocean_mask: np.ndarray,
-#     mask_lons: np.ndarray,
-#     mask_lats: np.ndarray,
-#     target_lons: np.ndarray,
-#     target_lats: np.ndarray,
-# ) -> np.ndarray:
-#     """
-#     Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
-
-#     Parameters
-#     ----------
-#     ocean_mask : np.ndarray
-#         The original ocean mask array.
-#     mask_lons : np.ndarray
-#         Longitudes of the original mask grid.
-#     mask_lats : np.ndarray
-#         Latitudes of the original mask grid.
-#     target_lons : np.ndarray
-#         Target longitudes for the new grid.
-#     target_lats : np.ndarray
-#         Target latitudes for the new grid.
-
-#     Returns
-#     -------
-#     np.ndarray
-#         The reprojected ocean mask on the target grid.
-#     """
-#     lon2d, lat2d = np.meshgrid(target_lons, target_lats, indexing="ij")
-#     points = np.stack([lon2d.flatten(), lat2d.flatten()], axis=-1)
-#     interp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
-#     ocean_mask_reprojected = interp(points).reshape(lon2d.shape)
-#     return (ocean_mask_reprojected > 0.5).astype(int)
 
 
 def slice_and_prepare_dataset(
@@ -126,45 +196,110 @@ def slice_and_prepare_dataset(
     return ds
 
 
-# def compute_mean_mass_balance_over_time_window(
-#     ds: xr.Dataset, start_time: datetime | None = None, end_time: datetime | None = None
-# ) -> xr.Dataset:
-#     """
-#     Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.
+def bin_loads_to_points(
+    lat_deg: np.ndarray,
+    lon_deg: np.ndarray,
+    mass_gt: np.ndarray,
+    masserr_gt: np.ndarray,
+    bin_res_deg: float = 1.0,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Bin loads into coarse lat/lon cells and return one point load per occupied cell (at the cell centre).
 
-#     Parameters
-#     ----------
-#     ds : xr.Dataset
-#         Input mass balance dataset with a time dimension.
-#     start_time : datetime | None
-#         Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
-#         accordingly before computing the mean. Otherwise, the entire time range is used.
-#     end_time : datetime | None
-#         End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
-#         accordingly before computing the mean. Otherwise, the entire time range is used.
+    Masses are summed. Errors are combined as sqrt(sum(err^2)), i.e. assuming independent errors.
 
-#     Returns
-#     -------
-#     xr.Dataset
-#         Dataset with the same spatial dimensions ('point', 'x', 'y'), where the 'time' dimension has been removed and
-#         each variable represents the mean value across the specified years.
-#     """
-#     if start_time and end_time:
-#         ds = ds.sel(time=slice(start_time, end_time))
-#     return xr.Dataset(
-#         {
-#             MASS_BALANCE_COL_NAME: (["point"], ds[MASS_BALANCE_COL_NAME].mean(dim="time", skipna=True).data),
-#             MASS_BALANCE_ERROR_COL_NAME: (
-#                 ["point"],
-#                 ds[MASS_BALANCE_ERROR_COL_NAME].mean(dim="time", skipna=True).data,
-#             ),
-#         },
-#         coords={
-#             "y": ds["y"].data,
-#             "x": ds["x"].data,
-#             "point": ds["point"].data,
-#         },
-#     )
+    Parameters
+    ----------
+    lat_deg : np.ndarray
+        Latitude of the loads in degrees (any shape; they are flattened).
+    lon_deg : np.ndarray
+        Longitude of the loads in degrees (any shape; they are flattened).
+    mass_gt : np.ndarray
+        Mass in Gt, same shape as lat/lon.
+    masserr_gt : np.ndarray
+        Mass error in Gt, same shape as lat/lon.
+    bin_res_deg : float
+        Resolution at which mass-balance loads are binned to point loads.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        lat_centres, lon_centres (degrees), mass (Gt), mass error (Gt) of the occupied bins.
+    """
+    lat = np.asarray(lat_deg, dtype=np.float64).ravel()
+    lon = wrap180(np.asarray(lon_deg, dtype=np.float64).ravel())
+    m = np.asarray(mass_gt, dtype=np.float64).ravel()
+    me = np.asarray(masserr_gt, dtype=np.float64).ravel()
+
+    ok = np.isfinite(m) & np.isfinite(lat) & np.isfinite(lon) & (np.abs(m) > 0.0)
+    lat, lon, m, me = lat[ok], lon[ok], m[ok], me[ok]
+
+    nlon_bins = int(np.ceil(360.0 / bin_res_deg))
+    nlat_bins = int(np.ceil(180.0 / bin_res_deg))
+
+    lon_bin = np.clip(np.floor((lon + 180.0) / bin_res_deg).astype(np.int64), 0, nlon_bins - 1)
+    lat_bin = np.clip(np.floor((lat + 90.0) / bin_res_deg).astype(np.int64), 0, nlat_bins - 1)
+    flat = lon_bin * nlat_bins + lat_bin
+
+    unique_bins, inverse = np.unique(flat, return_inverse=True)
+    m_sum = np.bincount(inverse, weights=m, minlength=unique_bins.size)
+    var_sum = np.bincount(inverse, weights=me**2, minlength=unique_bins.size)
+
+    keep = np.abs(m_sum) > 0.0
+    unique_bins, m_sum, var_sum = unique_bins[keep], m_sum[keep], var_sum[keep]
+
+    jlat = unique_bins % nlat_bins
+    jlon = unique_bins // nlat_bins
+    lon_cent = -180.0 + (jlon + 0.5) * bin_res_deg
+    lat_cent = -90.0 + (jlat + 0.5) * bin_res_deg
+
+    return lat_cent, lon_cent, m_sum, np.sqrt(var_sum)
+
+
+def compute_mean_mass_balance_over_time_window(
+    ds: xr.Dataset, start_time: datetime | None = None, end_time: datetime | None = None
+) -> xr.Dataset:
+    """
+    Compute the mean mass balance and, if present, its error over a time range, collapsing the time dimension.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Input mass balance dataset with a time dimension. The mass-balance error variable is optional.
+    start_time : datetime | None
+        Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+        accordingly before computing the mean. Otherwise, the entire time range is used.
+    end_time : datetime | None
+        End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
+        accordingly before computing the mean. Otherwise, the entire time range is used.
+
+    Returns
+    -------
+    xr.Dataset
+        Dataset with the same spatial dimensions ('point', 'x', 'y'), where the 'time' dimension has been removed and
+        each variable represents the mean value across the specified years. The error variable is only included if it
+        was present in the input.
+    """
+    if start_time and end_time:
+        ds = ds.sel(time=slice(start_time, end_time))
+
+    data_vars = {
+        MASS_BALANCE_COL_NAME: (["point"], ds[MASS_BALANCE_COL_NAME].mean(dim="time", skipna=True).data),
+    }
+    if MASS_BALANCE_ERROR_COL_NAME in ds:
+        data_vars[MASS_BALANCE_ERROR_COL_NAME] = (
+            ["point"],
+            ds[MASS_BALANCE_ERROR_COL_NAME].mean(dim="time", skipna=True).data,
+        )
+
+    return xr.Dataset(
+        data_vars,
+        coords={
+            "y": ds["y"].data,
+            "x": ds["x"].data,
+            "point": ds["point"].data,
+        },
+    )
 
 
 def preprocess_location_timeseries(

@@ -1,147 +1,37 @@
-"""
-SLR emulator module.
-
-This is a re-write of the module so that it follows the reference notebook (selrem_run.ipynb) step by step:
-
-1. Bin the gridded VMB loads to 1 degree point loads.
-2. For each point load, compute gdot / udot / rotation on a coarse "compute" grid with the SELREM fits.
-3. Apply the self-attraction factor to gdot, then add the uniform mass-conservation term ``c`` to get ndot / sdot.
-4. Mask land, interpolate to the fine target grid.
-
-All emulator maths is done in **metres** (as in the notebook). The public ``compute_*`` functions convert the result
-to millimetres by default (``output_units="mm"``), because the rest of the code base talks about mm.
-"""
+"""SLR emulator module."""
 
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-from scipy.interpolate import RegularGridInterpolator
 from scipy.special import sph_harm_y
 
-from sea_level_response.config import MASS_BALANCE_COL_NAME, MASS_BALANCE_ERROR_COL_NAME
+from sea_level_response.config import (
+    ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION,
+    BETA_SAL,
+    GMSL_PER_GT_M,
+    MASS_BALANCE_COL_NAME,
+    MASS_BALANCE_ERROR_COL_NAME,
+    R_EARTH_KM,
+    ROT_COEF,
+    Y21_LON_SHIFT_DEG,
+)
 from sea_level_response.selrem.numba_functions import accumulate_fields
-from sea_level_response.selrem.selrem_helpers import load_ocean_mask, load_selrem_parameters
-
-# ---------------------------------------------------------------------------
-# Physics constants and settings (same values as the notebook)
-# ---------------------------------------------------------------------------
-R_EARTH_KM = 6371.0
-GMSL_PER_GT_M = -1.0 / 362.0 / 1000.0  # metres of global-mean sea level per Gt (mass loss -> sea-level rise)
-ROT_COEF = 0.20  # rotational feedback coefficient
-BETA_SAL = 0.20  # self-attraction and loading coefficient
-Y21_LON_SHIFT_DEG = 20.0  # longitude shift of the Y21 rotational pattern
-
-TARGET_RES_DEG = 0.5  # output resolution
-COMPUTE_RES_DEG = 2.0  # internal compute grid resolution
-BIN_RES_DEG = 1.0  # resolution at which VMB loads are binned to point loads
+from sea_level_response.selrem.selrem_helpers import (
+    bin_loads_to_points,
+    build_lonlat,
+    compute_mean_mass_balance_over_time_window,
+    interp_ocean_mask_to,
+    interp_to_grid,
+    load_ocean_mask,
+    load_selrem_parameters,
+    wrap180,
+)
 
 _UNIT_FACTORS = {"m": 1.0, "mm": 1000.0}
 
 
-# ---------------------------------------------------------------------------
-# Small helpers
-# ---------------------------------------------------------------------------
-def wrap180(lon_deg: np.ndarray | float) -> np.ndarray | float:
-    """Wrap any longitude (e.g. 0-360) to [-180, 180)."""
-    return ((lon_deg + 180.0) % 360.0) - 180.0
-
-
-def _build_lonlat(res_deg: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Build a regular global grid: lon = -180..180 (periodic, no duplicated end point), lat = 90..-90."""
-    nlon = int(360 / res_deg)
-    nlat = int(180 / res_deg)
-    lons = np.linspace(-180, 180, nlon, endpoint=False)
-    lats = np.linspace(90, -90, nlat)
-    lon2d, lat2d = np.meshgrid(lons, lats, indexing="ij")
-    return lons, lats, lon2d, lat2d
-
-
-def _interp_ocean_mask_to(lons_t: np.ndarray, lats_t: np.ndarray, ocean_mask: np.ndarray) -> np.ndarray:
-    """Interpolate the global ocean mask (assumed lon -180..180 without end point, lat 90..-90) to a target grid."""
-    nlon_m, nlat_m = ocean_mask.shape
-    lons_m = np.linspace(-180, 180, nlon_m, endpoint=False)
-    lats_m = np.linspace(90, -90, nlat_m)
-
-    itp = RegularGridInterpolator((lons_m, lats_m), ocean_mask, bounds_error=False, fill_value=0)
-    lon2d_t, lat2d_t = np.meshgrid(lons_t, lats_t, indexing="ij")
-    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
-    m = itp(pts).reshape(lon2d_t.shape)
-    return (m > 0.5).astype(np.int8)
-
-
-def _interp_to_grid(
-    field: np.ndarray, lons_src: np.ndarray, lats_src: np.ndarray, lon2d_t: np.ndarray, lat2d_t: np.ndarray
-) -> np.ndarray:
-    """Linearly interpolate a (lon, lat) field to the target grid. Points outside the source grid become NaN."""
-    itp = RegularGridInterpolator((lons_src, lats_src), field, bounds_error=False, fill_value=np.nan)
-    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
-    return itp(pts).reshape(lon2d_t.shape)
-
-
-# ---------------------------------------------------------------------------
-# Step 1: binning of the loads
-# ---------------------------------------------------------------------------
-def bin_loads_to_points(
-    lat_deg: np.ndarray,
-    lon_deg: np.ndarray,
-    mass_gt: np.ndarray,
-    masserr_gt: np.ndarray,
-    bin_res_deg: float = BIN_RES_DEG,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Bin loads into coarse lat/lon cells and return one point load per occupied cell (at the cell centre).
-
-    Masses are summed. Errors are combined as sqrt(sum(err^2)), i.e. assuming independent errors.
-
-    Parameters
-    ----------
-    lat_deg, lon_deg : np.ndarray
-        Latitude / longitude of the loads in degrees (any shape; they are flattened).
-    mass_gt, masserr_gt : np.ndarray
-        Mass and mass error in Gt, same shape as lat/lon.
-    bin_res_deg : float
-        Bin size in degrees.
-
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-        lat_centres, lon_centres (degrees), mass (Gt), mass error (Gt) of the occupied bins.
-    """
-    lat = np.asarray(lat_deg, dtype=np.float64).ravel()
-    lon = wrap180(np.asarray(lon_deg, dtype=np.float64).ravel())
-    m = np.asarray(mass_gt, dtype=np.float64).ravel()
-    me = np.asarray(masserr_gt, dtype=np.float64).ravel()
-
-    ok = np.isfinite(m) & np.isfinite(lat) & np.isfinite(lon) & (np.abs(m) > 0.0)
-    lat, lon, m, me = lat[ok], lon[ok], m[ok], me[ok]
-
-    nlon_bins = int(np.ceil(360.0 / bin_res_deg))
-    nlat_bins = int(np.ceil(180.0 / bin_res_deg))
-
-    lon_bin = np.clip(np.floor((lon + 180.0) / bin_res_deg).astype(np.int64), 0, nlon_bins - 1)
-    lat_bin = np.clip(np.floor((lat + 90.0) / bin_res_deg).astype(np.int64), 0, nlat_bins - 1)
-    flat = lon_bin * nlat_bins + lat_bin
-
-    unique_bins, inverse = np.unique(flat, return_inverse=True)
-    m_sum = np.bincount(inverse, weights=m, minlength=unique_bins.size)
-    var_sum = np.bincount(inverse, weights=me**2, minlength=unique_bins.size)
-
-    keep = np.abs(m_sum) > 0.0
-    unique_bins, m_sum, var_sum = unique_bins[keep], m_sum[keep], var_sum[keep]
-
-    jlat = unique_bins % nlat_bins
-    jlon = unique_bins // nlat_bins
-    lon_cent = -180.0 + (jlon + 0.5) * bin_res_deg
-    lat_cent = -90.0 + (jlat + 0.5) * bin_res_deg
-
-    return lat_cent, lon_cent, m_sum, np.sqrt(var_sum)
-
-
-# ---------------------------------------------------------------------------
-# Steps 2-4: the emulator
-# ---------------------------------------------------------------------------
 def run_emulator(
     lat_p_deg: np.ndarray,
     lon_p_deg: np.ndarray,
@@ -152,8 +42,8 @@ def run_emulator(
     gdot_unc: np.ndarray,
     udot_unc: np.ndarray,
     ocean_mask: np.ndarray,
-    target_res_deg: float = TARGET_RES_DEG,
-    compute_res_deg: float = COMPUTE_RES_DEG,
+    target_res_deg: float = 0.5,
+    compute_res_deg: float = 2.0,
 ) -> dict[str, np.ndarray]:
     """
     Run the SELREM emulator for a set of point loads.
@@ -181,8 +71,8 @@ def run_emulator(
         c (m, the uniform mass-conservation term).
     """
     # Compute and target grids
-    lons_c, lats_c, lon2d_c, lat2d_c = _build_lonlat(compute_res_deg)
-    lons_t, lats_t, lon2d_t, lat2d_t = _build_lonlat(target_res_deg)
+    lons_c, lats_c, lon2d_c, lat2d_c = build_lonlat(compute_res_deg)
+    lons_t, lats_t, lon2d_t, lat2d_t = build_lonlat(target_res_deg)
 
     lat_c_rad = np.radians(lat2d_c)
     lon_c_rad = np.radians(lon2d_c)
@@ -233,7 +123,7 @@ def run_emulator(
 
     # Area weights and ocean mask on compute grid
     area_w = np.cos(np.radians(lats_c))[None, :].repeat(len(lons_c), axis=0)
-    ocean_mask_c = _interp_ocean_mask_to(lons_c, lats_c, ocean_mask)
+    ocean_mask_c = interp_ocean_mask_to(lons_c, lats_c, ocean_mask)
     ocean = ocean_mask_c > 0
 
     # Uniform mass-conservation term: ocean-mean sdot must equal sle
@@ -244,7 +134,7 @@ def run_emulator(
     ndot_c = gdot_c + c
     sdot_c = ndot_c - udot_c
 
-    # Enforce ocean-mean sdot = sle (numerically this is ~0 after the step above, kept as in the notebook)
+    # Enforce ocean-mean sdot = sle
     mean_sdot_ocean = np.sum(sdot_c[ocean] * area_w[ocean]) / np.sum(area_w[ocean])
     sdot_c[ocean] += sle - mean_sdot_ocean
     ndot_c = sdot_c + udot_c
@@ -267,38 +157,80 @@ def run_emulator(
 
     # Compute grid -> target grid
     out: dict[str, np.ndarray] = {
-        name: _interp_to_grid(field, lons_c, lats_c, lon2d_t, lat2d_t) for name, field in fields_c.items()
+        name: interp_to_grid(field, lons_c, lats_c, lon2d_t, lat2d_t) for name, field in fields_c.items()
     }
     out["lons"] = lons_t
     out["lats"] = lats_t
-    out["ocean_mask"] = _interp_ocean_mask_to(lons_t, lats_t, ocean_mask)
+    out["ocean_mask"] = interp_ocean_mask_to(lons_t, lats_t, ocean_mask)
     out["gmsl"] = np.asarray(sle)
     out["c"] = np.asarray(c)
     return out
 
 
-# ---------------------------------------------------------------------------
-# Dataset-level functions
-# ---------------------------------------------------------------------------
-def _points_from_vmb(
-    vmb: np.ndarray,
-    vmb_err: np.ndarray,
-    lat: np.ndarray,
-    lon: np.ndarray,
-    scale_factor: float = 1.0,
-    bin_res_deg: float = BIN_RES_DEG,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Convert VMB (kg) and its error (kg) at (lat, lon) to binned point loads in Gt."""
-    mass_gt = np.asarray(vmb, dtype=np.float64) * scale_factor / 1e12
-    masserr_gt = np.asarray(vmb_err, dtype=np.float64) * scale_factor / 1e12
-    return bin_loads_to_points(lat, lon, mass_gt, masserr_gt, bin_res_deg)
+def _prepare_vmb_points(
+    ds: xr.Dataset, scale_factor: float = 1.0
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, bool]:
+    """
+    Convert a VMB dataset (kg) into binned point loads (Gt) for the emulator.
+
+    If ds has no mass-balance error variable, an pre-defined uncertainty
+    (in percent of the mass change) of each grid cell is assumed.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset with dim "point", variable MASS_BALANCE_COL_NAME (kg), optionally MASS_BALANCE_ERROR_COL_NAME (kg),
+        and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
+    scale_factor : float
+        Factor to scale the mass balance values (and their error), by default 1.0.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, bool]
+        Latitude (deg), longitude (deg), mass (Gt) and mass error (Gt) of the binned loads, and a flag that is True if
+        the mass-balance uncertainty was assumed because the dataset did not contain one.
+    """
+    if "time" in ds.dims:
+        ds = compute_mean_mass_balance_over_time_window(ds)
+
+    mass_gt = ds[MASS_BALANCE_COL_NAME].to_numpy() * scale_factor / 1e12
+    if MASS_BALANCE_ERROR_COL_NAME in ds:
+        masserr_gt = ds[MASS_BALANCE_ERROR_COL_NAME].to_numpy() * scale_factor / 1e12
+        uncertainty_assumed = False
+    else:
+        masserr_gt = ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION * np.abs(mass_gt)
+        uncertainty_assumed = True
+
+    lat_p, lon_p, m_p, me_p = bin_loads_to_points(ds["y"].to_numpy(), ds["x"].to_numpy(), mass_gt, masserr_gt)
+    return lat_p, lon_p, m_p, me_p, uncertainty_assumed
 
 
-def _error_or_zeros(da_source: xr.Dataset, like: xr.DataArray) -> xr.DataArray:
-    """Return the mass-balance error variable if present, otherwise zeros shaped like ``like``."""
-    if MASS_BALANCE_ERROR_COL_NAME in da_source:
-        return da_source[MASS_BALANCE_ERROR_COL_NAME]
-    return xr.zeros_like(like)
+def _uncertainty_attrs(uncertainty_assumed: bool) -> dict:
+    """
+    Attributes that tell the user whether the mass-balance uncertainty was assumed.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset with dim "point", variable MASS_BALANCE_COL_NAME (kg), optionally MASS_BALANCE_ERROR_COL_NAME (kg),
+        and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
+    scale_factor : float
+        Factor to scale the mass balance values (and their error), by default 1.0.
+
+    Returns
+    -------
+    attr : dict
+        key: mass_balance_uncertainty_assumed with value: 1 or 0 (True / False)
+    """
+    attrs: dict = {"mass_balance_uncertainty_assumed": int(uncertainty_assumed)}
+    if uncertainty_assumed:
+        fraction = ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION
+        attrs["mass_balance_uncertainty_assumed_fraction"] = fraction
+        attrs["mass_balance_uncertainty_note"] = (
+            "The input data contains no mass-balance uncertainty. An uncertainty of "
+            f"+/-{fraction:.0%} of the mass change of each grid cell was assumed."
+        )
+    return attrs
 
 
 def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: str = "mm") -> xr.Dataset:
@@ -308,8 +240,9 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     Parameters
     ----------
     ds : xr.Dataset
-        Dataset with dims ("time", "point"), variables MASS_BALANCE_COL_NAME (kg), optionally
+        Dataset with dims ("time", "point"), variable MASS_BALANCE_COL_NAME (kg), optionally
         MASS_BALANCE_ERROR_COL_NAME (kg), and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
+        If the error variable is missing, an uncertainty of 15 % of the mass change is assumed (see attrs below).
     scale_factor : float
         Scaling factor applied to mass balance and its error (default: 1.0).
     output_units : str
@@ -319,25 +252,20 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     -------
     xr.Dataset
         Dataset with dims ("time", "x", "y") containing ndot, udot, sdot, sig_ndot, sig_udot, sig_sdot, rot_total.
+        ``attrs`` contains ``units`` and ``mass_balance_uncertainty_assumed`` (1 if the uncertainty was assumed, else 0;
+        if 1, also ``mass_balance_uncertainty_assumed_fraction`` and ``mass_balance_uncertainty_note``).
     """
     unit_factor = _UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
     ocean_mask, _, _ = load_ocean_mask()
 
-    time_vals = ds["time"].to_numpy()
-    years = np.asarray(pd.to_datetime(time_vals).year, dtype=int)
-
-    lat = ds["y"].to_numpy()
-    lon = ds["x"].to_numpy()
-    vmb_all = ds[MASS_BALANCE_COL_NAME]
-    err_all = _error_or_zeros(ds, vmb_all)
+    years = np.asarray(pd.to_datetime(ds["time"].to_numpy()).year, dtype=int)
 
     steps: list[dict[str, np.ndarray]] = []
     lons_t = lats_t = None
+    uncertainty_assumed = False
     for i in range(len(years)):
-        lat_p, lon_p, m_p, me_p = _points_from_vmb(
-            vmb_all.isel(time=i).to_numpy(), err_all.isel(time=i).to_numpy(), lat, lon, scale_factor
-        )
+        lat_p, lon_p, m_p, me_p, uncertainty_assumed = _prepare_vmb_points(ds.isel(time=i), scale_factor)
         out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
         lons_t, lats_t = out["lons"], out["lats"]
         steps.append(
@@ -352,14 +280,13 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
             }
         )
 
-    data_vars = {
-        key: (("time", "x", "y"), np.stack([s[key] for s in steps], axis=0) * unit_factor) for key in steps[0]
-    }
+    data_vars = {key: (("time", "x", "y"), np.stack([s[key] for s in steps], axis=0) * unit_factor) for key in steps[0]}
     ds_out = xr.Dataset(
         data_vars=data_vars,
         coords={"time": np.array([np.datetime64(f"{y}-01-01") for y in years]), "x": lons_t, "y": lats_t},
     )
     ds_out.attrs["units"] = output_units
+    ds_out.attrs.update(_uncertainty_attrs(uncertainty_assumed))
     return ds_out
 
 
@@ -374,6 +301,7 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     ----------
     ds : xr.Dataset
         VMB dataset with dim "point" (and optionally "time"); see ``compute_annual_slr``.
+        If the error variable is missing, an uncertainty of 15 % of the mass change is assumed (see attrs below).
     scale_factor : float
         Scaling factor for mass balance and its error (default: 1.0).
     output_units : str
@@ -383,21 +311,15 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     -------
     xr.Dataset
         Dataset with dims ("x", "y") containing sdot, ndot, udot, rot_total, sig_sdot, sig_ndot, sig_udot.
-        The ocean-mean values are stored in ``attrs`` as gmsl_sdot, gmsl_ndot, gmsl_udot.
+        The ocean-mean values are stored in ``attrs`` as gmsl_sdot, gmsl_ndot, gmsl_udot, together with ``units`` and
+        ``mass_balance_uncertainty_assumed`` (1 if the uncertainty was assumed, else 0; if 1, also
+        ``mass_balance_uncertainty_assumed_fraction`` and ``mass_balance_uncertainty_note``).
     """
     unit_factor = _UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
     ocean_mask, _, _ = load_ocean_mask()
 
-    vmb = ds[MASS_BALANCE_COL_NAME]
-    err = _error_or_zeros(ds, vmb)
-    if "time" in vmb.dims:
-        vmb = vmb.mean(dim="time", skipna=True)
-        err = err.mean(dim="time", skipna=True)
-
-    lat_p, lon_p, m_p, me_p = _points_from_vmb(
-        vmb.to_numpy(), err.to_numpy(), ds["y"].to_numpy(), ds["x"].to_numpy(), scale_factor
-    )
+    lat_p, lon_p, m_p, me_p, uncertainty_assumed = _prepare_vmb_points(ds, scale_factor)
     out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
 
     lons_t, lats_t = out["lons"], out["lats"]
@@ -422,4 +344,5 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     ds_out.attrs["gmsl_udot"] = ocean_mean(out["udot"]) * unit_factor
     ds_out.attrs["gmsl_sdot"] = ocean_mean(out["sdot"]) * unit_factor
     ds_out.attrs["units"] = output_units
+    ds_out.attrs.update(_uncertainty_attrs(uncertainty_assumed))
     return ds_out
