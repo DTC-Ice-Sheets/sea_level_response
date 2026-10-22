@@ -23,12 +23,12 @@ def wrap180(lon_deg: np.ndarray | float) -> np.ndarray | float:
 
     Parameters
     ----------
-    lon_deg : np.ndarray
+    lon_deg : np.ndarray | float
         Longitude in decimal degrees
 
     Returns
     -------
-    np.ndarray
+    np.ndarray | float
         Longitude in decimal degrees wrapped to [-180, 180)
     """
     return ((lon_deg + 180.0) % 360.0) - 180.0

@@ -50,12 +50,22 @@ def run_emulator(
 
     Parameters
     ----------
-    lat_p_deg, lon_p_deg : np.ndarray
-        Load locations in degrees.
-    mass_gt, masserr_gt : np.ndarray
-        Loads and their uncertainties in Gt (positive = mass gain).
-    gdot_fit, udot_fit, gdot_unc, udot_unc : np.ndarray
-        SELREM fit and uncertainty parameters.
+    lat_p_deg : np.ndarray
+        Load location latitudes in degrees.
+    lon_p_deg : np.ndarray
+        Load location longitudes in degrees.
+    mass_gt : np.ndarray
+        Load in Gt (positive = mass gain).
+    masserr_gt : np.ndarray
+        Load uncertainties in Gt
+    gdot_fit : np.ndarray
+        SELREM fit for rate of change of the geoid.
+    udot_fit : np.ndarray
+        SELREM fit for rate of vertical land motion.
+    gdot_unc : np.ndarray
+        SELREM fit uncertainty for rate of change of the geoid.
+    udot_unc : np.ndarray
+        SELREM fit uncertainty for rate of vertical land motion.
     ocean_mask : np.ndarray
         Global ocean mask, shape (nlon, nlat), 1 = ocean. Assumed lon -180..180 (no end point), lat 90..-90.
     target_res_deg : float
@@ -207,20 +217,22 @@ def _prepare_vmb_points(
 
 def _uncertainty_attrs(uncertainty_assumed: bool) -> dict:
     """
-    Attributes that tell the user whether the mass-balance uncertainty was assumed.
+    Build dataset attributes describing whether the mass-balance uncertainty was assumed.
 
     Parameters
     ----------
-    ds : xr.Dataset
-        Dataset with dim "point", variable MASS_BALANCE_COL_NAME (kg), optionally MASS_BALANCE_ERROR_COL_NAME (kg),
-        and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
-    scale_factor : float
-        Factor to scale the mass balance values (and their error), by default 1.0.
+    uncertainty_assumed : bool
+        True if the input data contained no mass-balance uncertainty and a fixed fraction of the
+        mass change (``ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION``) was used instead.
 
     Returns
     -------
-    attr : dict
-        key: mass_balance_uncertainty_assumed with value: 1 or 0 (True / False)
+    dict
+        Always contains ``mass_balance_uncertainty_assumed`` (int): 1 if the uncertainty was assumed, else 0.
+        If the uncertainty was assumed, it additionally contains:
+
+        - ``mass_balance_uncertainty_assumed_fraction`` (float): the assumed fraction of the mass change.
+        - ``mass_balance_uncertainty_note`` (str): a human-readable explanation of the assumption.
     """
     attrs: dict = {"mass_balance_uncertainty_assumed": int(uncertainty_assumed)}
     if uncertainty_assumed:
