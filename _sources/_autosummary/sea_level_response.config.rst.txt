@@ -4,3 +4,14 @@ sea\_level\_response.config
 .. automodule:: sea_level_response.config
 
    
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      EARTH_RADIUS_M
+      SELREM_ROT_COEFF
+      OCEAN_MASK_PATH
+      SELREM_PARAMS_PATH
+      MASS_BALANCE_COL_NAME
+      MASS_BALANCE_ERROR_COL_NAME
+   

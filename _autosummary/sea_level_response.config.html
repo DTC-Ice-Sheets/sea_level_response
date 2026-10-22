@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=acee47a5" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -50,7 +51,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../quick-start.html">Quick Start</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.config</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_M"><code class="docutils literal notranslate"><span class="pre">EARTH_RADIUS_M</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_COL_NAME"><code class="docutils literal notranslate"><span class="pre">MASS_BALANCE_COL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME"><code class="docutils literal notranslate"><span class="pre">MASS_BALANCE_ERROR_COL_NAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.OCEAN_MASK_PATH"><code class="docutils literal notranslate"><span class="pre">OCEAN_MASK_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.SELREM_PARAMS_PATH"><code class="docutils literal notranslate"><span class="pre">SELREM_PARAMS_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.SELREM_ROT_COEFF"><code class="docutils literal notranslate"><span class="pre">SELREM_ROT_COEFF</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.monitoring.html">sea_level_response.monitoring</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.prepare_gridded_ds_for_selrem_entrypoint.html">sea_level_response.prepare_gridded_ds_for_selrem_entrypoint</a></li>
@@ -92,6 +101,69 @@
   <section id="module-sea_level_response.config">
 <span id="sea-level-response-config"></span><h1>sea_level_response.config<a class="headerlink" href="#module-sea_level_response.config" title="Link to this heading"></a></h1>
 <p>Configuration constants for sea_level_response.</p>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_M" title="sea_level_response.config.EARTH_RADIUS_M"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EARTH_RADIUS_M</span></code></a></p></td>
+<td><p>Earth radius in metres.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.SELREM_ROT_COEFF" title="sea_level_response.config.SELREM_ROT_COEFF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SELREM_ROT_COEFF</span></code></a></p></td>
+<td><p>Rotational correction coefficient used by SELREM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.OCEAN_MASK_PATH" title="sea_level_response.config.OCEAN_MASK_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OCEAN_MASK_PATH</span></code></a></p></td>
+<td><p>Path to the bundled ocean mask dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.SELREM_PARAMS_PATH" title="sea_level_response.config.SELREM_PARAMS_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SELREM_PARAMS_PATH</span></code></a></p></td>
+<td><p>Path to the bundled SELREM fit parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_COL_NAME" title="sea_level_response.config.MASS_BALANCE_COL_NAME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MASS_BALANCE_COL_NAME</span></code></a></p></td>
+<td><p>Column name for land-ice surface specific mass balance flux.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME" title="sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MASS_BALANCE_ERROR_COL_NAME</span></code></a></p></td>
+<td><p>Column name for uncertainty in land-ice surface specific mass balance flux.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.EARTH_RADIUS_M">
+<span class="sig-name descname"><span class="pre">EARTH_RADIUS_M</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6371000</span></span><a class="headerlink" href="#sea_level_response.config.EARTH_RADIUS_M" title="Link to this definition"></a></dt>
+<dd><p>Earth radius in metres.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.MASS_BALANCE_COL_NAME">
+<span class="sig-name descname"><span class="pre">MASS_BALANCE_COL_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'land_ice_surface_specific_mass_balance_flux'</span></span><a class="headerlink" href="#sea_level_response.config.MASS_BALANCE_COL_NAME" title="Link to this definition"></a></dt>
+<dd><p>Column name for land-ice surface specific mass balance flux.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME">
+<span class="sig-name descname"><span class="pre">MASS_BALANCE_ERROR_COL_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'land_ice_surface_specific_mass_balance_flux_uncertainty'</span></span><a class="headerlink" href="#sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME" title="Link to this definition"></a></dt>
+<dd><p>Column name for uncertainty in land-ice surface specific mass balance flux.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.OCEAN_MASK_PATH">
+<span class="sig-name descname"><span class="pre">OCEAN_MASK_PATH</span></span><a class="headerlink" href="#sea_level_response.config.OCEAN_MASK_PATH" title="Link to this definition"></a></dt>
+<dd><p>Path to the bundled ocean mask dataset.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.SELREM_PARAMS_PATH">
+<span class="sig-name descname"><span class="pre">SELREM_PARAMS_PATH</span></span><a class="headerlink" href="#sea_level_response.config.SELREM_PARAMS_PATH" title="Link to this definition"></a></dt>
+<dd><p>Path to the bundled SELREM fit parameters.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.SELREM_ROT_COEFF">
+<span class="sig-name descname"><span class="pre">SELREM_ROT_COEFF</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-0.0003</span></span><a class="headerlink" href="#sea_level_response.config.SELREM_ROT_COEFF" title="Link to this definition"></a></dt>
+<dd><p>Rotational correction coefficient used by SELREM.</p>
+</dd></dl>
+
 </section>
 
 

@@ -4,6 +4,12 @@ sea\_level\_response.helpers
 .. automodule:: sea_level_response.helpers
 
    
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      ZarrType
+   
    .. rubric:: Functions
 
    .. autosummary::

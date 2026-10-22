@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=acee47a5" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -97,6 +98,14 @@
   <section id="module-sea_level_response.helpers">
 <span id="sea-level-response-helpers"></span><h1>sea_level_response.helpers<a class="headerlink" href="#module-sea_level_response.helpers" title="Link to this heading"></a></h1>
 <p>Utility functions for use across sea_level_response modules.</p>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.helpers.ZarrType" title="sea_level_response.helpers.ZarrType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZarrType</span></code></a></p></td>
+<td><p>A local path or web URL, represented as a string.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -110,12 +119,16 @@
 </table>
 <dl class="py type">
 <dt class="sig sig-object py" id="sea_level_response.helpers.ZarrType">
-<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">ZarrType</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Annotated[str,</span> <span class="pre">Parameter(validator=(&lt;function</span> <span class="pre">path_or_web_url_validator</span> <span class="pre">at</span> <span class="pre">0x7f29b8926160&gt;,))]</span></span><a class="headerlink" href="#sea_level_response.helpers.ZarrType" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ZarrType</span></span><a class="headerlink" href="#sea_level_response.helpers.ZarrType" title="Link to this definition"></a></dt>
+<dd><p>A local path or web URL, represented as a string.</p>
+<p>Validated by <a class="reference internal" href="#sea_level_response.helpers.path_or_web_url_validator" title="sea_level_response.helpers.path_or_web_url_validator"><code class="xref py py-func docutils literal notranslate"><span class="pre">path_or_web_url_validator()</span></code></a>.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.helpers.get_dataset_crs">
-<span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">get_dataset_crs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CRS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#sea_level_response.helpers.get_dataset_crs" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_dataset_crs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CRS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#sea_level_response.helpers.get_dataset_crs" title="Link to this definition"></a></dt>
 <dd><p>Retrieve the CRS details from the dataset.</p>
 <p>This function has been taken from the Data Download Module. It first checks for CRS written with rioxarray. Next,
 it checks the dataset for a grid mapping attribute If the CRS is not found in the grid mapping, it checks the
@@ -137,7 +150,7 @@ data on EODS).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.helpers.path_or_web_url_validator">
-<span class="sig-prename descclassname"><span class="pre">sea_level_response.helpers.</span></span><span class="sig-name descname"><span class="pre">path_or_web_url_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_or_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#sea_level_response.helpers.path_or_web_url_validator" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">path_or_web_url_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_or_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#sea_level_response.helpers.path_or_web_url_validator" title="Link to this definition"></a></dt>
 <dd><p>Validate that the provided path is either a valid local path or a web URL.</p>
 <p>NOTE: Path(“”) resolves to the current directory (“.”) - which is considered a valid path.</p>
 <dl class="field-list simple">
