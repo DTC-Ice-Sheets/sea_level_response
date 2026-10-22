@@ -119,5 +119,12 @@ def path_or_web_url_validator(type_: object, path_or_url: Path | str) -> str:  #
     return str(path_or_url)
 
 
-# alias for use in cyclopts Parameter definitions
+# Alias for use in cyclopts Parameter definitions.
+# Override the sphinx documentation entry in the lines below since cyclopts doesn't produce nice results for
+# custom validators:
+#: A local path or web URL, represented as a string.
+#:
+#: Validated by :func:`path_or_web_url_validator`.
+#:
+#: :meta hide-value:
 type ZarrType = Annotated[str, Parameter(validator=path_or_web_url_validator)]
