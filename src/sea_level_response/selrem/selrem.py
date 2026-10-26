@@ -171,14 +171,33 @@ def run_emulator(
     return out
 
 
+def _has_mass_balance_uncertainty(ds: xr.Dataset) -> bool:
+    """
+    Check whether a dataset contains any finite mass-balance uncertainty value.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Mass balance dataset that optionally contains MASS_BALANCE_ERROR_COL_NAME.
+
+    Returns
+    -------
+    bool
+        False if the error variable is absent or contains only non-finite values (e.g. all NaN), else True.
+    """
+    if MASS_BALANCE_ERROR_COL_NAME not in ds:
+        return False
+    return bool(np.isfinite(ds[MASS_BALANCE_ERROR_COL_NAME].to_numpy()).any())
+
+
 def _prepare_vmb_points(
-    ds: xr.Dataset, scale_factor: float = 1.0
+    ds: xr.Dataset, scale_factor: float = 1.0, has_uncertainty: bool | None = None
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, bool]:
     """
     Convert a VMB dataset (kg) into binned point loads (Gt) for the emulator.
 
-    If ds has no mass-balance error variable, a pre-defined uncertainty
-    (in percent of the mass change) of each grid cell is assumed.
+    If the dataset contains no mass-balance uncertainty at all (variable absent or all values non-finite),
+    a pre-defined uncertainty (fraction of the mass change) of each grid cell is assumed.
 
     Parameters
     ----------
@@ -187,6 +206,8 @@ def _prepare_vmb_points(
         and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
     scale_factor : float
         Factor to scale the mass balance values (and their error), by default 1.0.
+    has_uncertainty : bool | None
+        Whether the full dataset contains uncertainty values. If None, it is determined from ``ds``.
 
     Returns
     -------
@@ -194,17 +215,19 @@ def _prepare_vmb_points(
         Latitude (deg), longitude (deg), mass (Gt) and mass error (Gt) of the binned loads, and a flag that is True if
         the mass-balance uncertainty was assumed because the dataset did not contain one.
     """
+    if has_uncertainty is None:
+        has_uncertainty = _has_mass_balance_uncertainty(ds)
+
     if "time" in ds.dims:
         ds = compute_mean_mass_balance_over_time_window(ds)
 
     mass_gt = ds[MASS_BALANCE_COL_NAME].to_numpy() * scale_factor / 1e12
-    if MASS_BALANCE_ERROR_COL_NAME in ds:
+    if has_uncertainty:
         masserr_gt = ds[MASS_BALANCE_ERROR_COL_NAME].to_numpy() * scale_factor / 1e12
-        uncertainty_assumed = False
     else:
         masserr_gt = ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION * np.abs(mass_gt)
-        uncertainty_assumed = True
 
+    uncertainty_assumed = not has_uncertainty
     lat_p, lon_p, m_p, me_p = bin_loads_to_points(ds["y"].to_numpy(), ds["x"].to_numpy(), mass_gt, masserr_gt)
     return lat_p, lon_p, m_p, me_p, uncertainty_assumed
 
@@ -216,8 +239,8 @@ def _uncertainty_attrs(uncertainty_assumed: bool) -> dict:
     Parameters
     ----------
     uncertainty_assumed : bool
-        True if the input data contained no mass-balance uncertainty and a fixed fraction of the
-        mass change (``ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION``) was used instead.
+        True if the input data contained no mass-balance uncertainty at all (over all years and points) and
+        a fixed fraction of the mass change (``ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION``) was used instead.
 
     Returns
     -------
@@ -269,9 +292,10 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
 
     steps: list[dict[str, np.ndarray]] = []
     lons_t = lats_t = None
-    uncertainty_assumed = False
+    has_uncertainty = _has_mass_balance_uncertainty(ds)
+    uncertainty_assumed = not has_uncertainty
     for i in range(len(years)):
-        lat_p, lon_p, m_p, me_p, uncertainty_assumed = _prepare_vmb_points(ds.isel(time=i), scale_factor)
+        lat_p, lon_p, m_p, me_p, _ = _prepare_vmb_points(ds.isel(time=i), scale_factor, has_uncertainty)
         out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
         lons_t, lats_t = out["lons"], out["lats"]
         steps.append(
