@@ -19,7 +19,7 @@ MASS_BALANCE_COL_NAME = "land_ice_surface_specific_mass_balance_flux"
 MASS_BALANCE_ERROR_COL_NAME = "land_ice_surface_specific_mass_balance_flux_uncertainty"
 
 #: Earth radius in kilometers.
-R_EARTH_KM = 6371.0
+EARTH_RADIUS_KM = 6371.0
 
 #: Metres of global-mean sea level per Gt (mass loss -> sea-level rise).
 GMSL_PER_GT_M = -1.0 / 362.0 / 1000.0
@@ -30,11 +30,11 @@ ROT_COEF = 0.20
 #: Self-attraction and loading coefficient used by SELREM.
 BETA_SAL = 0.20
 
-Y21_LON_SHIFT_DEG = 20.0  # longitude shift of the Y21 rotational pattern
-TARGET_RES_DEG = 0.5  # output resolution
-COMPUTE_RES_DEG = 2.0  # internal compute grid resolution
-BIN_RES_DEG = 1.0  # resolution at which VMB loads are binned to point loads
+#: Longitude shift of the Y21 rotational pattern
+Y21_LON_SHIFT_DEG = 20.0
 
-ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION = 0.15  # if input mass-balance dataset doesn't have uncertainties, assume 15%
+#: If input mass-balance dataset doesn't have uncertainties, assume 15%
+ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION = 0.15
 
-_UNIT_FACTORS = {"m": 1.0, "mm": 1000.0}
+#: Dictionary for unit conversions
+UNIT_FACTORS = {"m": 1.0, "mm": 1000.0}

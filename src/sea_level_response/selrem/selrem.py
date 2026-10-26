@@ -13,8 +13,7 @@ from sea_level_response.config import (
     GMSL_PER_GT_M,
     MASS_BALANCE_COL_NAME,
     MASS_BALANCE_ERROR_COL_NAME,
-    R_EARTH_KM,
-    ROT_COEF,
+    UNIT_FACTORS,
     Y21_LON_SHIFT_DEG,
 )
 from sea_level_response.selrem.numba_functions import accumulate_fields
@@ -28,8 +27,6 @@ from sea_level_response.selrem.selrem_helpers import (
     load_selrem_parameters,
     wrap180,
 )
-
-_UNIT_FACTORS = {"m": 1.0, "mm": 1000.0}
 
 
 def run_emulator(
@@ -115,9 +112,6 @@ def run_emulator(
         np.asarray(udot_fit, dtype=np.float64),
         np.asarray(gdot_unc, dtype=np.float64),
         np.asarray(udot_unc, dtype=np.float64),
-        R_EARTH_KM,
-        GMSL_PER_GT_M,
-        ROT_COEF,
     )
 
     # Uncertainties (computed *before* the self-attraction factor, as in the notebook)
@@ -183,7 +177,7 @@ def _prepare_vmb_points(
     """
     Convert a VMB dataset (kg) into binned point loads (Gt) for the emulator.
 
-    If ds has no mass-balance error variable, an pre-defined uncertainty
+    If ds has no mass-balance error variable, a pre-defined uncertainty
     (in percent of the mass change) of each grid cell is assumed.
 
     Parameters
@@ -267,7 +261,7 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
         ``attrs`` contains ``units`` and ``mass_balance_uncertainty_assumed`` (1 if the uncertainty was assumed, else 0;
         if 1, also ``mass_balance_uncertainty_assumed_fraction`` and ``mass_balance_uncertainty_note``).
     """
-    unit_factor = _UNIT_FACTORS[output_units]
+    unit_factor = UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
     ocean_mask, _, _ = load_ocean_mask()
 
@@ -327,7 +321,7 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
         ``mass_balance_uncertainty_assumed`` (1 if the uncertainty was assumed, else 0; if 1, also
         ``mass_balance_uncertainty_assumed_fraction`` and ``mass_balance_uncertainty_note``).
     """
-    unit_factor = _UNIT_FACTORS[output_units]
+    unit_factor = UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
     ocean_mask, _, _ = load_ocean_mask()
 

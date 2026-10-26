@@ -3,12 +3,12 @@ Functions accelerated with Numba for SELREM computation.
 
 These have been separated because Numba JIT-compiled functions can have issues with type hints. Keeping them here allows
 us to keep type hints in other parts of the SELREM logic.
-
-The kernel below is a direct port of ``_emulator_kernel_gridwise`` from the reference notebook (selrem_run.ipynb).
 """
 
 import numpy as np
 from numba import njit, prange
+
+from sea_level_response.config import EARTH_RADIUS_KM, GMSL_PER_GT_M, ROT_COEF
 
 
 # Keep this Numba kernel unannotated: pytest-typeguard instruments annotations such as np.ndarray with runtime
@@ -27,29 +27,37 @@ def accumulate_fields(
     udot_fit,
     gdot_unc,
     udot_unc,
-    r_earth_km,
-    gmsl_per_gt_m,
-    rot_coef,
 ):
     """
-    Accumulate the response of every grid cell to every point load.
+    Accumulate sea-level and deformation fields from mass change points using SELREM parameterizations.
 
     Parameters
     ----------
-    lat_p_rad, lon_p_rad : np.ndarray
-        1D arrays, load locations in radians.
-    mass_gt, masserr_gt : np.ndarray
-        1D arrays, loads and their uncertainties in Gt.
-    sin_lat_g, cos_lat_g, lon_g_rad, y21_real_g : np.ndarray
-        2D (nlon, nlat) arrays describing the computation grid.
-    gdot_fit, udot_fit, gdot_unc, udot_unc : np.ndarray
-        SELREM fit / uncertainty parameters (from ``selrem_udot_gdot_fit.json``).
-    r_earth_km : float
-        Earth radius in km.
-    gmsl_per_gt_m : float
-        Global-mean sea level (m) per Gt of mass (negative: mass loss raises sea level).
-    rot_coef : float
-        Rotational feedback coefficient.
+    lat_p_rad : np.ndarray
+        1D array of latitudes of load locations in radians.
+    lon_p_rad : np.ndarray
+        1D array of longitudes of load locations in radians.
+    mass_gt : np.ndarray
+        1D array of mass balance loads in Gt.
+    masserr_gt : np.ndarray
+        1D array of mass balance uncertainties in Gt.
+    sin_lat_g : np.ndarray
+        2D (nlon, nlat) array of the sine of the latitude of each computation grid cell.
+    cos_lat_g : np.ndarray
+        2D (nlon, nlat) array of the cosine of the latitude of each computation grid cell.
+    lon_g_rad : np.ndarray
+        2D (nlon, nlat) array of the longitude of each computation grid cell in radians.
+    y21_real_g : np.ndarray
+        2D (nlon, nlat) array of the real part of the Y21 spherical harmonic (rotational pattern) on the
+        computation grid, normalised to +1 and -1.
+    gdot_fit : np.ndarray
+        SELREM fit for rate of change of the geoid.
+    udot_fit : np.ndarray
+        SELREM fit for rate of vertical land motion.
+    gdot_unc : np.ndarray
+        SELREM fit uncertainty for rate of change of the geoid.
+    udot_unc : np.ndarray
+        SELREM fit uncertainty for rate of vertical land motion.
 
     Returns
     -------
@@ -94,7 +102,7 @@ def accumulate_fields(
                     c = 1.0
                 elif c < -1.0:
                     c = -1.0
-                dist_km = r_earth_km * np.arccos(c)
+                dist_km = EARTH_RADIUS_KM * np.arccos(c)
 
                 # Radial Green's functions
                 r_gd = (
@@ -112,10 +120,10 @@ def accumulate_fields(
                 )
 
                 # Mass (Gt) -> global-mean sea level (m)
-                sle_m = gmsl_per_gt_m * mass_gt[k]
+                sle_m = GMSL_PER_GT_M * mass_gt[k]
                 gd = r_gd * sle_m
                 ud = r_ud * sle_m
-                ro = rot_coef * sle_m * y21_real_g[i, j]
+                ro = ROT_COEF * sle_m * y21_real_g[i, j]
 
                 gd_sum += gd + ro
                 ud_sum += ud
@@ -136,7 +144,7 @@ def accumulate_fields(
                 ud_unc_sum += sigr_ud * abs(sle_m)
 
                 # Mass-balance (VMB) uncertainty, as variance
-                sle_err = gmsl_per_gt_m * masserr_gt[k]
+                sle_err = GMSL_PER_GT_M * masserr_gt[k]
                 gd_vmb_var_sum += (r_gd * sle_err) ** 2
                 ud_vmb_var_sum += (r_ud * sle_err) ** 2
 
