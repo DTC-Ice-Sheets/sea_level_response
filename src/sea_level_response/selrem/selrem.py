@@ -191,45 +191,38 @@ def _has_mass_balance_uncertainty(ds: xr.Dataset) -> bool:
 
 
 def _prepare_vmb_points(
-    ds: xr.Dataset, scale_factor: float = 1.0, has_uncertainty: bool | None = None
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, bool]:
+    ds: xr.Dataset, uncertainty_assumed: bool, scale_factor: float = 1.0
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Convert a VMB dataset (kg) into binned point loads (Gt) for the emulator.
-
-    If the dataset contains no mass-balance uncertainty at all (variable absent or all values non-finite),
-    a pre-defined uncertainty (fraction of the mass change) of each grid cell is assumed.
 
     Parameters
     ----------
     ds : xr.Dataset
         Dataset with dim "point", variable MASS_BALANCE_COL_NAME (kg), optionally MASS_BALANCE_ERROR_COL_NAME (kg),
         and coordinates "y" (latitude, deg) and "x" (longitude, deg) along "point".
+    uncertainty_assumed : bool
+        If True, the error variable is ignored and a pre-defined uncertainty (fraction of the mass change) of each
+        grid cell is assumed instead. Callers decide this once for the full input dataset (see
+        ``_has_mass_balance_uncertainty``), so that all time steps are treated consistently.
     scale_factor : float
         Factor to scale the mass balance values (and their error), by default 1.0.
-    has_uncertainty : bool | None
-        Whether the full dataset contains uncertainty values. If None, it is determined from ``ds``.
 
     Returns
     -------
-    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, bool]
-        Latitude (deg), longitude (deg), mass (Gt) and mass error (Gt) of the binned loads, and a flag that is True if
-        the mass-balance uncertainty was assumed because the dataset did not contain one.
+    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        Latitude (deg), longitude (deg), mass (Gt) and mass error (Gt) of the binned loads.
     """
-    if has_uncertainty is None:
-        has_uncertainty = _has_mass_balance_uncertainty(ds)
-
     if "time" in ds.dims:
         ds = compute_mean_mass_balance_over_time_window(ds)
 
     mass_gt = ds[MASS_BALANCE_COL_NAME].to_numpy() * scale_factor / 1e12
-    if has_uncertainty:
-        masserr_gt = ds[MASS_BALANCE_ERROR_COL_NAME].to_numpy() * scale_factor / 1e12
-    else:
+    if uncertainty_assumed:
         masserr_gt = ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION * np.abs(mass_gt)
+    else:
+        masserr_gt = ds[MASS_BALANCE_ERROR_COL_NAME].to_numpy() * scale_factor / 1e12
 
-    uncertainty_assumed = not has_uncertainty
-    lat_p, lon_p, m_p, me_p = bin_loads_to_points(ds["y"].to_numpy(), ds["x"].to_numpy(), mass_gt, masserr_gt)
-    return lat_p, lon_p, m_p, me_p, uncertainty_assumed
+    return bin_loads_to_points(ds["y"].to_numpy(), ds["x"].to_numpy(), mass_gt, masserr_gt)
 
 
 def _uncertainty_attrs(uncertainty_assumed: bool) -> dict:
@@ -292,10 +285,9 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
 
     steps: list[dict[str, np.ndarray]] = []
     lons_t = lats_t = None
-    has_uncertainty = _has_mass_balance_uncertainty(ds)
-    uncertainty_assumed = not has_uncertainty
+    uncertainty_assumed = not _has_mass_balance_uncertainty(ds)
     for i in range(len(years)):
-        lat_p, lon_p, m_p, me_p, _ = _prepare_vmb_points(ds.isel(time=i), scale_factor, has_uncertainty)
+        lat_p, lon_p, m_p, me_p = _prepare_vmb_points(ds.isel(time=i), uncertainty_assumed, scale_factor)
         out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
         lons_t, lats_t = out["lons"], out["lats"]
         steps.append(
@@ -349,7 +341,8 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
     ocean_mask, _, _ = load_ocean_mask()
 
-    lat_p, lon_p, m_p, me_p, uncertainty_assumed = _prepare_vmb_points(ds, scale_factor)
+    uncertainty_assumed = not _has_mass_balance_uncertainty(ds)
+    lat_p, lon_p, m_p, me_p = _prepare_vmb_points(ds, uncertainty_assumed, scale_factor)
     out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
 
     lons_t, lats_t = out["lons"], out["lats"]
