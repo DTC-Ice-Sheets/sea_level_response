@@ -2,31 +2,30 @@
 Functions accelerated with Numba for SELREM computation.
 
 These have been separated because Numba JIT-compiled functions can have issues with type hints. Keeping them here allows
-us to keep type hints in other parts of the  SELREM logic.
+us to keep type hints in other parts of the SELREM logic.
 """
 
-import numba
 import numpy as np
 from numba import njit, prange
 
-from sea_level_response.config import EARTH_RADIUS_M, SELREM_ROT_COEFF
+from sea_level_response.config import EARTH_RADIUS_KM, GMSL_PER_GT_M, ROT_COEF
 
 
 # Keep this Numba kernel unannotated: pytest-typeguard instruments annotations such as np.ndarray with runtime
 # TypeCheckMemo checks, which Numba cannot type in nopython mode after @njit compilation.
 @njit(parallel=True, fastmath=True)
 def accumulate_fields(
-    lat_arr,
-    lon_arr,
-    mass_arr,
-    mass_err_arr,
-    sin_lat,
-    cos_lat,
-    lon_rad,
-    y21_real,
-    ndot_fit,
+    lat_p_rad,
+    lon_p_rad,
+    mass_gt,
+    masserr_gt,
+    sin_lat_g,
+    cos_lat_g,
+    lon_g_rad,
+    y21_real_g,
+    gdot_fit,
     udot_fit,
-    ndot_unc,
+    gdot_unc,
     udot_unc,
 ):
     """
@@ -34,72 +33,83 @@ def accumulate_fields(
 
     Parameters
     ----------
-    lat_arr : np.ndarray
-        Array of latitudes (in radians) for mass change points.
-    lon_arr : np.ndarray
-        Array of longitudes (in radians) for mass change points.
-    mass_arr : np.ndarray
-        Array of mass changes (in Gt) for each point.
-    mass_err_arr : np.ndarray
-        Array of mass change uncertainties (in Gt) for each point.
-    sin_lat : np.ndarray
-        2D array of sine of latitude for the target grid.
-    cos_lat : np.ndarray
-        2D array of cosine of latitude for the target grid.
-    lon_rad : np.ndarray
-        2D array of longitude (in radians) for the target grid.
-    y21_real : np.ndarray
-        2D array of real part of spherical harmonic Y21 for the target grid.
-    ndot_fit : np.ndarray
-        SELREM fit parameters for ndot.
+    lat_p_rad : np.ndarray
+        1D array of latitudes of load locations in radians.
+    lon_p_rad : np.ndarray
+        1D array of longitudes of load locations in radians.
+    mass_gt : np.ndarray
+        1D array of mass balance loads in Gt.
+    masserr_gt : np.ndarray
+        1D array of mass balance uncertainties in Gt.
+    sin_lat_g : np.ndarray
+        2D (nlon, nlat) array of the sine of the latitude of each computation grid cell.
+    cos_lat_g : np.ndarray
+        2D (nlon, nlat) array of the cosine of the latitude of each computation grid cell.
+    lon_g_rad : np.ndarray
+        2D (nlon, nlat) array of the longitude of each computation grid cell in radians.
+    y21_real_g : np.ndarray
+        2D (nlon, nlat) array of the real part of the Y21 spherical harmonic (rotational pattern) on the
+        computation grid, normalised to +1 and -1.
+    gdot_fit : np.ndarray
+        SELREM fit for rate of change of the geoid.
     udot_fit : np.ndarray
-        SELREM fit parameters for udot.
-    ndot_unc : np.ndarray
-        SELREM uncertainty parameters for ndot.
+        SELREM fit for rate of vertical land motion.
+    gdot_unc : np.ndarray
+        SELREM fit uncertainty for rate of change of the geoid.
     udot_unc : np.ndarray
-        SELREM uncertainty parameters for udot.
+        SELREM fit uncertainty for rate of vertical land motion.
 
     Returns
     -------
     tuple of np.ndarray
-        Tuple containing ndot_total, udot_total, rot_total, ndot_radial_unc_total,
-        udot_radial_unc_total, ndot_vmb_unc_total, udot_vmb_unc_total arrays.
+        gdot, udot, rot, gdot_radial_unc, udot_radial_unc, gdot_vmb_var, udot_vmb_var, all in metres
+        (the last two are *variances*, i.e. m^2). ``gdot`` already includes the rotational term.
     """
-    nlon, nlat = sin_lat.shape
+    nlon, nlat = sin_lat_g.shape
+    npts = mass_gt.size
 
-    # Number of threads
-    n_threads = numba.config.NUMBA_DEFAULT_NUM_THREADS
+    gdot = np.zeros((nlon, nlat))
+    udot = np.zeros((nlon, nlat))
+    rot = np.zeros((nlon, nlat))
+    gdot_radial_unc = np.zeros((nlon, nlat))
+    udot_radial_unc = np.zeros((nlon, nlat))
+    gdot_vmb_var = np.zeros((nlon, nlat))
+    udot_vmb_var = np.zeros((nlon, nlat))
 
-    # Allocate thread-local arrays
-    ndot_loc = np.zeros((n_threads, nlon, nlat))
-    udot_loc = np.zeros((n_threads, nlon, nlat))
-    rot_loc = np.zeros((n_threads, nlon, nlat))
-    ndot_radial_unc_loc = np.zeros((n_threads, nlon, nlat))
-    udot_radial_unc_loc = np.zeros((n_threads, nlon, nlat))
-    ndot_vmb_unc_loc = np.zeros((n_threads, nlon, nlat))
-    udot_vmb_unc_loc = np.zeros((n_threads, nlon, nlat))
+    # Pre-compute trigonometry of the loads once
+    sin_lat_p = np.sin(lat_p_rad)
+    cos_lat_p = np.cos(lat_p_rad)
 
-    for p in prange(lat_arr.shape[0]):
-        thread_id = numba.get_thread_id()
-        lat0 = lat_arr[p]
-        lon0 = lon_arr[p]
-        m = mass_arr[p]
-        sigm = mass_err_arr[p]
+    # Every (i, j) cell is independent, so parallelising over i is safe.
+    for i in prange(nlon):
+        for j in range(nlat):
+            sin_lat = sin_lat_g[i, j]
+            cos_lat = cos_lat_g[i, j]
+            lonr = lon_g_rad[i, j]
 
-        sin_lat0 = np.sin(lat0)
-        cos_lat0 = np.cos(lat0)
+            gd_sum = 0.0
+            ud_sum = 0.0
+            rot_sum = 0.0
+            gd_unc_sum = 0.0
+            ud_unc_sum = 0.0
+            gd_vmb_var_sum = 0.0
+            ud_vmb_var_sum = 0.0
 
-        for i in range(nlon):
-            for j in range(nlat):
-                cos_d = sin_lat0 * sin_lat[i, j] + cos_lat0 * cos_lat[i, j] * np.cos(lon_rad[i, j] - lon0)
-                cos_d = min(1.0, max(-1.0, cos_d))
-                dist_km = (EARTH_RADIUS_M / 1000.0) * np.arccos(cos_d)
+            for k in range(npts):
+                # Great-circle distance between cell and load
+                c = sin_lat_p[k] * sin_lat + cos_lat_p[k] * cos_lat * np.cos(lon_p_rad[k] - lonr)
+                if c > 1.0:
+                    c = 1.0
+                elif c < -1.0:
+                    c = -1.0
+                dist_km = EARTH_RADIUS_KM * np.arccos(c)
 
-                r_nd = (
-                    ndot_fit[0]
-                    + ndot_fit[1] * dist_km
-                    + ndot_fit[2] * dist_km**2
-                    + ndot_fit[3] * np.exp(-dist_km / ndot_fit[4])
+                # Radial Green's functions
+                r_gd = (
+                    gdot_fit[0]
+                    + gdot_fit[1] * dist_km
+                    + gdot_fit[2] * dist_km**2
+                    + gdot_fit[3] * np.exp(-dist_km / gdot_fit[4])
                 )
                 r_ud = (
                     udot_fit[0]
@@ -109,45 +119,41 @@ def accumulate_fields(
                     + udot_fit[5] * np.exp(-dist_km / udot_fit[6])
                 )
 
-                nd = r_nd * m
-                ud = r_ud * m
-                rot = SELREM_ROT_COEFF * m * y21_real[i, j]
+                # Mass (Gt) -> global-mean sea level (m)
+                sle_m = GMSL_PER_GT_M * mass_gt[k]
+                gd = r_gd * sle_m
+                ud = r_ud * sle_m
+                ro = ROT_COEF * sle_m * y21_real_g[i, j]
 
-                ndot_loc[thread_id, i, j] += nd + rot
-                udot_loc[thread_id, i, j] += ud
-                rot_loc[thread_id, i, j] += rot
+                gd_sum += gd + ro
+                ud_sum += ud
+                rot_sum += ro
 
-                sigr_nd = (
-                    ndot_unc[0] * np.exp(-dist_km / ndot_unc[1])
-                    + ndot_unc[2]
-                    + ndot_unc[3] * (1 - np.exp(-dist_km / ndot_unc[4]))
+                # Radial (fit) uncertainty
+                sigr_gd = (
+                    gdot_unc[0] * np.exp(-dist_km / gdot_unc[1])
+                    + gdot_unc[2]
+                    + gdot_unc[3] * (1.0 - np.exp(-dist_km / gdot_unc[4]))
                 )
                 sigr_ud = (
                     udot_unc[0] * np.exp(-dist_km / udot_unc[1])
                     + udot_unc[2]
-                    + udot_unc[3] * (1 - np.exp(-dist_km / udot_unc[4]))
+                    + udot_unc[3] * (1.0 - np.exp(-dist_km / udot_unc[4]))
                 )
+                gd_unc_sum += sigr_gd * abs(sle_m)
+                ud_unc_sum += sigr_ud * abs(sle_m)
 
-                ndot_radial_unc_loc[thread_id, i, j] += sigr_nd * abs(m)
-                udot_radial_unc_loc[thread_id, i, j] += sigr_ud * abs(m)
-                ndot_vmb_unc_loc[thread_id, i, j] += (r_nd * sigm) ** 2
-                udot_vmb_unc_loc[thread_id, i, j] += (r_ud * sigm) ** 2
+                # Mass-balance (VMB) uncertainty, as variance
+                sle_err = GMSL_PER_GT_M * masserr_gt[k]
+                gd_vmb_var_sum += (r_gd * sle_err) ** 2
+                ud_vmb_var_sum += (r_ud * sle_err) ** 2
 
-    # Sum over threads
-    ndot_total = np.sum(ndot_loc, axis=0)
-    udot_total = np.sum(udot_loc, axis=0)
-    rot_total = np.sum(rot_loc, axis=0)
-    ndot_radial_unc_total = np.sum(ndot_radial_unc_loc, axis=0)
-    udot_radial_unc_total = np.sum(udot_radial_unc_loc, axis=0)
-    ndot_vmb_unc_total = np.sum(ndot_vmb_unc_loc, axis=0)
-    udot_vmb_unc_total = np.sum(udot_vmb_unc_loc, axis=0)
+            gdot[i, j] = gd_sum
+            udot[i, j] = ud_sum
+            rot[i, j] = rot_sum
+            gdot_radial_unc[i, j] = gd_unc_sum
+            udot_radial_unc[i, j] = ud_unc_sum
+            gdot_vmb_var[i, j] = gd_vmb_var_sum
+            udot_vmb_var[i, j] = ud_vmb_var_sum
 
-    return (
-        ndot_total,
-        udot_total,
-        rot_total,
-        ndot_radial_unc_total,
-        udot_radial_unc_total,
-        ndot_vmb_unc_total,
-        udot_vmb_unc_total,
-    )
+    return gdot, udot, rot, gdot_radial_unc, udot_radial_unc, gdot_vmb_var, udot_vmb_var

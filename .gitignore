@@ -38,3 +38,6 @@ docs/source/_autosummary/
 
 # local data
 .scrapy/
+.vscode/settings.json
+*.DS_Store
+src/sea_level_response/.DS_Store
