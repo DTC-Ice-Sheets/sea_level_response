@@ -8,10 +8,14 @@ sea\_level\_response.selrem.selrem\_helpers
 
    .. autosummary::
    
+      bin_loads_to_points
+      build_lonlat
       compute_mean_mass_balance_over_time_window
+      interp_ocean_mask_to
+      interp_to_grid
       load_ocean_mask
       load_selrem_parameters
       preprocess_location_timeseries
-      reproject_ocean_mask
       slice_and_prepare_dataset
+      wrap180
    

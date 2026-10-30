@@ -104,33 +104,35 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.compute_annual_slr" title="sea_level_response.selrem.selrem.compute_annual_slr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_annual_slr</span></code></a>(ds[, scale_factor])</p></td>
-<td><p>Compute annual SELREM SLR results and return as an xarray.Dataset.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.compute_annual_slr" title="sea_level_response.selrem.selrem.compute_annual_slr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_annual_slr</span></code></a>(ds[, scale_factor, ...])</p></td>
+<td><p>Compute annual SELREM SLR results and return them as an xarray.Dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.compute_global_slr" title="sea_level_response.selrem.selrem.compute_global_slr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_global_slr</span></code></a>(ds[, scale_factor])</p></td>
-<td><p>Compute global sea-level response from a VMB dataset.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.compute_global_slr" title="sea_level_response.selrem.selrem.compute_global_slr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_global_slr</span></code></a>(ds[, scale_factor, ...])</p></td>
+<td><p>Compute the global sea-level response from a VMB dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.run_emulator" title="sea_level_response.selrem.selrem.run_emulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_emulator</span></code></a>(loading_points, ndot_fit, ...)</p></td>
-<td><p>Compute the necessary parameters for the emulator.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem.run_emulator" title="sea_level_response.selrem.selrem.run_emulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_emulator</span></code></a>(lat_p_deg, lon_p_deg, mass_gt, ...)</p></td>
+<td><p>Run the SELREM emulator for a set of point loads.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.selrem.selrem.compute_annual_slr">
-<span class="sig-name descname"><span class="pre">compute_annual_slr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.compute_annual_slr" title="Link to this definition"></a></dt>
-<dd><p>Compute annual SELREM SLR results and return as an xarray.Dataset.</p>
+<span class="sig-name descname"><span class="pre">compute_annual_slr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.compute_annual_slr" title="Link to this definition"></a></dt>
+<dd><p>Compute annual SELREM SLR results and return them as an xarray.Dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – xarray.Dataset with dims (“point”, “year”), variables “VMB”, “VMBer”, “y”, “x”</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em>) – Scaling factor to apply to mass balance values (default: 1.0).</p></li>
+<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Dataset with dims (“time”, “point”), variable MASS_BALANCE_COL_NAME (kg), optionally
+MASS_BALANCE_ERROR_COL_NAME (kg), and coordinates “y” (latitude, deg) and “x” (longitude, deg) along “point”.
+If the error variable is missing, an uncertainty of 15 % of the mass change is assumed (see attrs below).</p></li>
+<li><p><strong>scale_factor</strong> (<em>float</em>) – Scaling factor applied to mass balance and its error (default: 1.0).</p></li>
+<li><p><strong>output_units</strong> (<em>str</em>) – “mm” (default) or “m”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>xarray.Dataset with dims (“year”, “y”, “x”) containing:
-- ndot, udot, sdot
-- sig_ndot, sig_udot, sig_sdot
-- rot_total</p>
+<dd class="field-even"><p>Dataset with dims (“time”, “x”, “y”) containing ndot, udot, sdot, sig_ndot, sig_udot, sig_sdot, rot_total.
+<code class="docutils literal notranslate"><span class="pre">attrs</span></code> contains <code class="docutils literal notranslate"><span class="pre">units</span></code> and <code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_assumed</span></code> (1 if the uncertainty was assumed, else 0;
+if 1, also <code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_assumed_fraction</span></code> and <code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_note</span></code>).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
@@ -140,28 +142,24 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.selrem.selrem.compute_global_slr">
-<span class="sig-name descname"><span class="pre">compute_global_slr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.compute_global_slr" title="Link to this definition"></a></dt>
-<dd><p>Compute global sea-level response from a VMB dataset.</p>
+<span class="sig-name descname"><span class="pre">compute_global_slr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.compute_global_slr" title="Link to this definition"></a></dt>
+<dd><p>Compute the global sea-level response from a VMB dataset.</p>
+<p>If the dataset has a “time” dimension, the mass balance (and its error) is first averaged over time and the
+emulator is run once on the mean. Otherwise the dataset is used as a single snapshot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Single-snapshot VMB dataset (no ‘year’ dimension required).</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em>) – Scaling factor for mass balance, default 1.0.</p></li>
+<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – VMB dataset with dim “point” (and optionally “time”); see <code class="docutils literal notranslate"><span class="pre">compute_annual_slr</span></code>.
+If the error variable is missing, an uncertainty of 15 % of the mass change is assumed (see attrs below).</p></li>
+<li><p><strong>scale_factor</strong> (<em>float</em>) – Scaling factor for mass balance and its error (default: 1.0).</p></li>
+<li><p><strong>output_units</strong> (<em>str</em>) – “mm” (default) or “m”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>{</dt><dd><p>“sdot”: (lat, lon) gridded relative SLR,
-“ndot”: (lat, lon) absolute SLR,
-“udot”: (lat, lon) vertical deformation,
-“sig_sdot”: (lat, lon) uncertainty,
-“global_mean_sdot”: scalar,
-“global_mean_ndot”: scalar,
-“global_mean_udot”: scalar</p>
-</dd>
-</dl>
-<p>}</p>
-</p>
+<dd class="field-even"><p>Dataset with dims (“x”, “y”) containing sdot, ndot, udot, rot_total, sig_sdot, sig_ndot, sig_udot.
+The ocean-mean values are stored in <code class="docutils literal notranslate"><span class="pre">attrs</span></code> as gmsl_sdot, gmsl_ndot, gmsl_udot, together with <code class="docutils literal notranslate"><span class="pre">units</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_assumed</span></code> (1 if the uncertainty was assumed, else 0; if 1, also
+<code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_assumed_fraction</span></code> and <code class="docutils literal notranslate"><span class="pre">mass_balance_uncertainty_note</span></code>).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
@@ -171,90 +169,31 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.selrem.selrem.run_emulator">
-<span class="sig-name descname"><span class="pre">run_emulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loading_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_unc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_unc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.run_emulator" title="Link to this definition"></a></dt>
-<dd><p>Compute the necessary parameters for the emulator.</p>
+<span class="sig-name descname"><span class="pre">run_emulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat_p_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_p_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masserr_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdot_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdot_unc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_unc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_res_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_res_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem.run_emulator" title="Link to this definition"></a></dt>
+<dd><p>Run the SELREM emulator for a set of point loads.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>loading_points</strong> (<em>pd.DataFrame</em><em> | </em><em>dict</em>) – DataFrame or dictionary containing loading point data with keys/columns:
-‘lat’ (latitude in degrees), ‘lon’ (longitude in degrees),
-‘Mass(Gt)’ (mass in gigatonnes), and optionally ‘Mass_err(Gt)’ (mass error in gigatonnes).</p></li>
-<li><p><strong>ndot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for ndot.</p></li>
-<li><p><strong>udot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for udot.</p></li>
-<li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – 2D array representing the ocean mask (1 for ocean, 0 for land).</p></li>
-<li><p><strong>ndot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for ndot.</p></li>
-<li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for udot.</p></li>
-<li><p><strong>target_res</strong> (<em>float</em>) – Target resolution in degrees for the final output grid, by default 0.5.</p></li>
-<li><p><strong>compute_res</strong> (<em>float</em>) – Computation resolution in degrees for intermediate calculations, by default 5.0.</p></li>
+<li><p><strong>lat_p_deg</strong> (<em>np.ndarray</em>) – Load location latitudes in degrees.</p></li>
+<li><p><strong>lon_p_deg</strong> (<em>np.ndarray</em>) – Load location longitudes in degrees.</p></li>
+<li><p><strong>mass_gt</strong> (<em>np.ndarray</em>) – Load in Gt (positive = mass gain).</p></li>
+<li><p><strong>masserr_gt</strong> (<em>np.ndarray</em>) – Load uncertainties in Gt</p></li>
+<li><p><strong>gdot_fit</strong> (<em>np.ndarray</em>) – SELREM fit for rate of change of the geoid.</p></li>
+<li><p><strong>udot_fit</strong> (<em>np.ndarray</em>) – SELREM fit for rate of vertical land motion.</p></li>
+<li><p><strong>gdot_unc</strong> (<em>np.ndarray</em>) – SELREM fit uncertainty for rate of change of the geoid.</p></li>
+<li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM fit uncertainty for rate of vertical land motion.</p></li>
+<li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – Global ocean mask, shape (nlon, nlat), 1 = ocean. Assumed lon -180..180 (no end point), lat 90..-90.</p></li>
+<li><p><strong>target_res_deg</strong> (<em>float</em>) – Resolution of the output grid in degrees.</p></li>
+<li><p><strong>compute_res_deg</strong> (<em>float</em>) – Resolution of the internal computation grid in degrees.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>Tuple containing the following elements:
-- lat_arr : np.ndarray</p>
-<blockquote>
-<div><p>1D array of latitude (in radians) for the loading points.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>lon_arr<span class="classifier">np.ndarray</span></dt><dd><p>1D array of longitude (in radians) for the loading points.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>mass_arr<span class="classifier">np.ndarray</span></dt><dd><p>1D array of mass (in Gt) for the loading points.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>mass_err_arr<span class="classifier">np.ndarray</span></dt><dd><p>1D array of mass error (in Gt) for the loading points.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>sin_lat<span class="classifier">np.ndarray</span></dt><dd><p>2D array of sine of latitude for the target grid.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>cos_lat<span class="classifier">np.ndarray</span></dt><dd><p>2D array of cosine of latitude for the target grid.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>lon_rad<span class="classifier">np.ndarray</span></dt><dd><p>2D array of longitude (in radians) for the target grid.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>y21_real<span class="classifier">np.ndarray</span></dt><dd><p>2D array of real part of spherical harmonic Y21 for the target grid.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>ndot_fit<span class="classifier">np.ndarray</span></dt><dd><p>SELREM fit parameters for ndot.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>udot_fit<span class="classifier">np.ndarray</span></dt><dd><p>SELREM fit parameters for udot.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>ndot_unc<span class="classifier">np.ndarray</span></dt><dd><p>SELREM uncertainty parameters for ndot.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>udot_unc<span class="classifier">np.ndarray</span></dt><dd><p>SELREM uncertainty parameters for udot.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</p>
+<dd class="field-even"><p>Keys: lons, lats (1D), ndot, udot, sdot, rot, sig_ndot, sig_udot, sig_sdot (2D, shape (nlon, nlat), in
+metres), ocean_mask (2D, target grid), gmsl (m, global-mean sea level of the input loads) and
+c (m, the uniform mass-conservation term).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
+<dd class="field-odd"><p>dict[str, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>

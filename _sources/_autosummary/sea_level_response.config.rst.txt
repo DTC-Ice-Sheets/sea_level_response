@@ -8,10 +8,15 @@ sea\_level\_response.config
 
    .. autosummary::
    
-      EARTH_RADIUS_M
-      SELREM_ROT_COEFF
       OCEAN_MASK_PATH
       SELREM_PARAMS_PATH
       MASS_BALANCE_COL_NAME
       MASS_BALANCE_ERROR_COL_NAME
+      EARTH_RADIUS_KM
+      GMSL_PER_GT_M
+      ROT_COEF
+      BETA_SAL
+      Y21_LON_SHIFT_DEG
+      ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION
+      UNIT_FACTORS
    

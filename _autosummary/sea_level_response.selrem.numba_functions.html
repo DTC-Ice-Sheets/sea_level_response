@@ -102,39 +102,40 @@
 <span id="sea-level-response-selrem-numba-functions"></span><h1>sea_level_response.selrem.numba_functions<a class="headerlink" href="#module-sea_level_response.selrem.numba_functions" title="Link to this heading"></a></h1>
 <p>Functions accelerated with Numba for SELREM computation.</p>
 <p>These have been separated because Numba JIT-compiled functions can have issues with type hints. Keeping them here allows
-us to keep type hints in other parts of the  SELREM logic.</p>
+us to keep type hints in other parts of the SELREM logic.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="sea_level_response.selrem.numba_functions.accumulate_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">accumulate_fields</span></code></a>(lat_arr, lon_arr, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="sea_level_response.selrem.numba_functions.accumulate_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">accumulate_fields</span></code></a>(lat_p_rad, lon_p_rad, ...)</p></td>
 <td><p>Accumulate sea-level and deformation fields from mass change points using SELREM parameterizations.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.selrem.numba_functions.accumulate_fields">
-<span class="sig-name descname"><span class="pre">accumulate_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_err_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sin_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cos_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y21_real</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndot_unc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_unc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">accumulate_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat_p_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_p_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_gt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masserr_gt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sin_lat_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cos_lat_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_g_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y21_real_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdot_unc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udot_unc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sea_level_response.selrem.numba_functions.accumulate_fields" title="Link to this definition"></a></dt>
 <dd><p>Accumulate sea-level and deformation fields from mass change points using SELREM parameterizations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lat_arr</strong> (<em>np.ndarray</em>) – Array of latitudes (in radians) for mass change points.</p></li>
-<li><p><strong>lon_arr</strong> (<em>np.ndarray</em>) – Array of longitudes (in radians) for mass change points.</p></li>
-<li><p><strong>mass_arr</strong> (<em>np.ndarray</em>) – Array of mass changes (in Gt) for each point.</p></li>
-<li><p><strong>mass_err_arr</strong> (<em>np.ndarray</em>) – Array of mass change uncertainties (in Gt) for each point.</p></li>
-<li><p><strong>sin_lat</strong> (<em>np.ndarray</em>) – 2D array of sine of latitude for the target grid.</p></li>
-<li><p><strong>cos_lat</strong> (<em>np.ndarray</em>) – 2D array of cosine of latitude for the target grid.</p></li>
-<li><p><strong>lon_rad</strong> (<em>np.ndarray</em>) – 2D array of longitude (in radians) for the target grid.</p></li>
-<li><p><strong>y21_real</strong> (<em>np.ndarray</em>) – 2D array of real part of spherical harmonic Y21 for the target grid.</p></li>
-<li><p><strong>ndot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for ndot.</p></li>
-<li><p><strong>udot_fit</strong> (<em>np.ndarray</em>) – SELREM fit parameters for udot.</p></li>
-<li><p><strong>ndot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for ndot.</p></li>
-<li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM uncertainty parameters for udot.</p></li>
+<li><p><strong>lat_p_rad</strong> (<em>np.ndarray</em>) – 1D array of latitudes of load locations in radians.</p></li>
+<li><p><strong>lon_p_rad</strong> (<em>np.ndarray</em>) – 1D array of longitudes of load locations in radians.</p></li>
+<li><p><strong>mass_gt</strong> (<em>np.ndarray</em>) – 1D array of mass balance loads in Gt.</p></li>
+<li><p><strong>masserr_gt</strong> (<em>np.ndarray</em>) – 1D array of mass balance uncertainties in Gt.</p></li>
+<li><p><strong>sin_lat_g</strong> (<em>np.ndarray</em>) – 2D (nlon, nlat) array of the sine of the latitude of each computation grid cell.</p></li>
+<li><p><strong>cos_lat_g</strong> (<em>np.ndarray</em>) – 2D (nlon, nlat) array of the cosine of the latitude of each computation grid cell.</p></li>
+<li><p><strong>lon_g_rad</strong> (<em>np.ndarray</em>) – 2D (nlon, nlat) array of the longitude of each computation grid cell in radians.</p></li>
+<li><p><strong>y21_real_g</strong> (<em>np.ndarray</em>) – 2D (nlon, nlat) array of the real part of the Y21 spherical harmonic (rotational pattern) on the
+computation grid, normalised to +1 and -1.</p></li>
+<li><p><strong>gdot_fit</strong> (<em>np.ndarray</em>) – SELREM fit for rate of change of the geoid.</p></li>
+<li><p><strong>udot_fit</strong> (<em>np.ndarray</em>) – SELREM fit for rate of vertical land motion.</p></li>
+<li><p><strong>gdot_unc</strong> (<em>np.ndarray</em>) – SELREM fit uncertainty for rate of change of the geoid.</p></li>
+<li><p><strong>udot_unc</strong> (<em>np.ndarray</em>) – SELREM fit uncertainty for rate of vertical land motion.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple containing ndot_total, udot_total, rot_total, ndot_radial_unc_total,
-udot_radial_unc_total, ndot_vmb_unc_total, udot_vmb_unc_total arrays.</p>
+<dd class="field-even"><p>gdot, udot, rot, gdot_radial_unc, udot_radial_unc, gdot_vmb_var, udot_vmb_var, all in metres
+(the last two are <em>variances</em>, i.e. m^2). <code class="docutils literal notranslate"><span class="pre">gdot</span></code> already includes the rotational term.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple of np.ndarray</p>

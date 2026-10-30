@@ -52,12 +52,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="sea_level_response.html">sea_level_response</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sea_level_response.config</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_M"><code class="docutils literal notranslate"><span class="pre">EARTH_RADIUS_M</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION"><code class="docutils literal notranslate"><span class="pre">ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.BETA_SAL"><code class="docutils literal notranslate"><span class="pre">BETA_SAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_KM"><code class="docutils literal notranslate"><span class="pre">EARTH_RADIUS_KM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.GMSL_PER_GT_M"><code class="docutils literal notranslate"><span class="pre">GMSL_PER_GT_M</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_COL_NAME"><code class="docutils literal notranslate"><span class="pre">MASS_BALANCE_COL_NAME</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME"><code class="docutils literal notranslate"><span class="pre">MASS_BALANCE_ERROR_COL_NAME</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.OCEAN_MASK_PATH"><code class="docutils literal notranslate"><span class="pre">OCEAN_MASK_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.ROT_COEF"><code class="docutils literal notranslate"><span class="pre">ROT_COEF</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.SELREM_PARAMS_PATH"><code class="docutils literal notranslate"><span class="pre">SELREM_PARAMS_PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.SELREM_ROT_COEFF"><code class="docutils literal notranslate"><span class="pre">SELREM_ROT_COEFF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.UNIT_FACTORS"><code class="docutils literal notranslate"><span class="pre">UNIT_FACTORS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sea_level_response.config.Y21_LON_SHIFT_DEG"><code class="docutils literal notranslate"><span class="pre">Y21_LON_SHIFT_DEG</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sea_level_response.helpers.html">sea_level_response.helpers</a></li>
@@ -104,12 +109,6 @@
 <p class="rubric">Module Attributes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_M" title="sea_level_response.config.EARTH_RADIUS_M"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EARTH_RADIUS_M</span></code></a></p></td>
-<td><p>Earth radius in metres.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.SELREM_ROT_COEFF" title="sea_level_response.config.SELREM_ROT_COEFF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SELREM_ROT_COEFF</span></code></a></p></td>
-<td><p>Rotational correction coefficient used by SELREM.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.OCEAN_MASK_PATH" title="sea_level_response.config.OCEAN_MASK_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OCEAN_MASK_PATH</span></code></a></p></td>
 <td><p>Path to the bundled ocean mask dataset.</p></td>
 </tr>
@@ -122,12 +121,51 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME" title="sea_level_response.config.MASS_BALANCE_ERROR_COL_NAME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MASS_BALANCE_ERROR_COL_NAME</span></code></a></p></td>
 <td><p>Column name for uncertainty in land-ice surface specific mass balance flux.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.EARTH_RADIUS_KM" title="sea_level_response.config.EARTH_RADIUS_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EARTH_RADIUS_KM</span></code></a></p></td>
+<td><p>Earth radius in kilometers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.GMSL_PER_GT_M" title="sea_level_response.config.GMSL_PER_GT_M"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GMSL_PER_GT_M</span></code></a></p></td>
+<td><p>Metres of global-mean sea level per Gt (mass loss -&gt; sea-level rise).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.ROT_COEF" title="sea_level_response.config.ROT_COEF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ROT_COEF</span></code></a></p></td>
+<td><p>Rotational correction coefficient used by SELREM.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.BETA_SAL" title="sea_level_response.config.BETA_SAL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BETA_SAL</span></code></a></p></td>
+<td><p>Self-attraction and loading coefficient used by SELREM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.Y21_LON_SHIFT_DEG" title="sea_level_response.config.Y21_LON_SHIFT_DEG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Y21_LON_SHIFT_DEG</span></code></a></p></td>
+<td><p>Longitude shift of the Y21 rotational pattern</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.config.ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION" title="sea_level_response.config.ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION</span></code></a></p></td>
+<td><p>If input mass-balance dataset doesn't have uncertainties, assume 15%</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.config.UNIT_FACTORS" title="sea_level_response.config.UNIT_FACTORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNIT_FACTORS</span></code></a></p></td>
+<td><p>Dictionary for unit conversions</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py data">
-<dt class="sig sig-object py" id="sea_level_response.config.EARTH_RADIUS_M">
-<span class="sig-name descname"><span class="pre">EARTH_RADIUS_M</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6371000</span></span><a class="headerlink" href="#sea_level_response.config.EARTH_RADIUS_M" title="Link to this definition"></a></dt>
-<dd><p>Earth radius in metres.</p>
+<dt class="sig sig-object py" id="sea_level_response.config.ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION">
+<span class="sig-name descname"><span class="pre">ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.15</span></span><a class="headerlink" href="#sea_level_response.config.ASSUMED_MASS_BALANCE_UNCERTAINTY_FRACTION" title="Link to this definition"></a></dt>
+<dd><p>If input mass-balance dataset doesn’t have uncertainties, assume 15%</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.BETA_SAL">
+<span class="sig-name descname"><span class="pre">BETA_SAL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#sea_level_response.config.BETA_SAL" title="Link to this definition"></a></dt>
+<dd><p>Self-attraction and loading coefficient used by SELREM.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.EARTH_RADIUS_KM">
+<span class="sig-name descname"><span class="pre">EARTH_RADIUS_KM</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6371.0</span></span><a class="headerlink" href="#sea_level_response.config.EARTH_RADIUS_KM" title="Link to this definition"></a></dt>
+<dd><p>Earth radius in kilometers.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.GMSL_PER_GT_M">
+<span class="sig-name descname"><span class="pre">GMSL_PER_GT_M</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-2.762430939226519e-06</span></span><a class="headerlink" href="#sea_level_response.config.GMSL_PER_GT_M" title="Link to this definition"></a></dt>
+<dd><p>Metres of global-mean sea level per Gt (mass loss -&gt; sea-level rise).</p>
 </dd></dl>
 
 <dl class="py data">
@@ -151,6 +189,12 @@
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.ROT_COEF">
+<span class="sig-name descname"><span class="pre">ROT_COEF</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#sea_level_response.config.ROT_COEF" title="Link to this definition"></a></dt>
+<dd><p>Rotational correction coefficient used by SELREM.</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="sea_level_response.config.SELREM_PARAMS_PATH">
 <span class="sig-name descname"><span class="pre">SELREM_PARAMS_PATH</span></span><a class="headerlink" href="#sea_level_response.config.SELREM_PARAMS_PATH" title="Link to this definition"></a></dt>
 <dd><p>Path to the bundled SELREM fit parameters.</p>
@@ -159,9 +203,15 @@
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="sea_level_response.config.SELREM_ROT_COEFF">
-<span class="sig-name descname"><span class="pre">SELREM_ROT_COEFF</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-0.0003</span></span><a class="headerlink" href="#sea_level_response.config.SELREM_ROT_COEFF" title="Link to this definition"></a></dt>
-<dd><p>Rotational correction coefficient used by SELREM.</p>
+<dt class="sig sig-object py" id="sea_level_response.config.UNIT_FACTORS">
+<span class="sig-name descname"><span class="pre">UNIT_FACTORS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'m':</span> <span class="pre">1.0,</span> <span class="pre">'mm':</span> <span class="pre">1000.0}</span></span><a class="headerlink" href="#sea_level_response.config.UNIT_FACTORS" title="Link to this definition"></a></dt>
+<dd><p>Dictionary for unit conversions</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sea_level_response.config.Y21_LON_SHIFT_DEG">
+<span class="sig-name descname"><span class="pre">Y21_LON_SHIFT_DEG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20.0</span></span><a class="headerlink" href="#sea_level_response.config.Y21_LON_SHIFT_DEG" title="Link to this definition"></a></dt>
+<dd><p>Longitude shift of the Y21 rotational pattern</p>
 </dd></dl>
 
 </section>

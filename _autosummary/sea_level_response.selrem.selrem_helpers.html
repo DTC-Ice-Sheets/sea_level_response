@@ -104,8 +104,20 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.bin_loads_to_points" title="sea_level_response.selrem.selrem_helpers.bin_loads_to_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bin_loads_to_points</span></code></a>(lat_deg, lon_deg, ...[, ...])</p></td>
+<td><p>Bin loads into coarse lat/lon cells and return one point load per occupied cell (at the cell centre).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.build_lonlat" title="sea_level_response.selrem.selrem_helpers.build_lonlat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_lonlat</span></code></a>(res_deg)</p></td>
+<td><p>Build a regular global grid: lon = -180 to 180 (periodic), lat = 90 to -90.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window" title="sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mean_mass_balance_over_time_window</span></code></a>(ds)</p></td>
-<td><p>Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.</p></td>
+<td><p>Compute the mean mass balance and, if present, its error over a time range, collapsing the time dimension.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.interp_ocean_mask_to" title="sea_level_response.selrem.selrem_helpers.interp_ocean_mask_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interp_ocean_mask_to</span></code></a>(target_lons, ...)</p></td>
+<td><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.interp_to_grid" title="sea_level_response.selrem.selrem_helpers.interp_to_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interp_to_grid</span></code></a>(field, lons_src, lats_src, ...)</p></td>
+<td><p>Linearly interpolate a (lon, lat) field to the target grid.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.load_ocean_mask" title="sea_level_response.selrem.selrem_helpers.load_ocean_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_ocean_mask</span></code></a>()</p></td>
 <td><p>Load the ocean mask from a NetCDF file.</p></td>
@@ -116,22 +128,63 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries" title="sea_level_response.selrem.selrem_helpers.preprocess_location_timeseries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preprocess_location_timeseries</span></code></a>(...)</p></td>
 <td><p>Preprocess annual SLR data for a specific location, returning plot-ready time series.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.reproject_ocean_mask" title="sea_level_response.selrem.selrem_helpers.reproject_ocean_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reproject_ocean_mask</span></code></a>(ocean_mask, mask_lons, ...)</p></td>
-<td><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset" title="sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slice_and_prepare_dataset</span></code></a>(vmb_dataset_path, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset" title="sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slice_and_prepare_dataset</span></code></a>(vmb_dataset_path, ...)</p></td>
 <td><p>Load, slice, and prepare the VMB dataset for SELREM computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#sea_level_response.selrem.selrem_helpers.wrap180" title="sea_level_response.selrem.selrem_helpers.wrap180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap180</span></code></a>(lon_deg)</p></td>
+<td><p>Wrap any longitude (e.g. 0-360) to [-180, 180).</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
-<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window">
-<span class="sig-name descname"><span class="pre">compute_mean_mass_balance_over_time_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window" title="Link to this definition"></a></dt>
-<dd><p>Compute the mean mass balance and associated error over the selected time range, collapsing the time dimension.</p>
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.bin_loads_to_points">
+<span class="sig-name descname"><span class="pre">bin_loads_to_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masserr_gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_res_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.bin_loads_to_points" title="Link to this definition"></a></dt>
+<dd><p>Bin loads into coarse lat/lon cells and return one point load per occupied cell (at the cell centre).</p>
+<p>Masses are summed. Errors are combined as sqrt(sum(err^2)), i.e. assuming independent errors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Input mass balance dataset with a time dimension.</p></li>
+<li><p><strong>lat_deg</strong> (<em>np.ndarray</em>) – Latitude of the loads in degrees (any shape; they are flattened).</p></li>
+<li><p><strong>lon_deg</strong> (<em>np.ndarray</em>) – Longitude of the loads in degrees (any shape; they are flattened).</p></li>
+<li><p><strong>mass_gt</strong> (<em>np.ndarray</em>) – Mass in Gt, same shape as lat/lon.</p></li>
+<li><p><strong>masserr_gt</strong> (<em>np.ndarray</em>) – Mass error in Gt, same shape as lat/lon.</p></li>
+<li><p><strong>bin_res_deg</strong> (<em>float</em>) – Resolution at which mass-balance loads are binned to point loads.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lat_centres, lon_centres (degrees), mass (Gt), mass error (Gt) of the occupied bins.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.build_lonlat">
+<span class="sig-name descname"><span class="pre">build_lonlat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.build_lonlat" title="Link to this definition"></a></dt>
+<dd><p>Build a regular global grid: lon = -180 to 180 (periodic), lat = 90 to -90.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>res_deg</strong> (<em>float</em>) – Grid resolution in decimal degrees</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(Longitude, Latitude, 2D Longitude, 2D Latitude)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window">
+<span class="sig-name descname"><span class="pre">compute_mean_mass_balance_over_time_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.compute_mean_mass_balance_over_time_window" title="Link to this definition"></a></dt>
+<dd><p>Compute the mean mass balance and, if present, its error over a time range, collapsing the time dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xr.Dataset</em>) – Input mass balance dataset with a time dimension. The mass-balance error variable is optional.</p></li>
 <li><p><strong>start_time</strong> (<em>datetime</em><em> | </em><em>None</em>) – Start time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
 accordingly before computing the mean. Otherwise, the entire time range is used.</p></li>
 <li><p><strong>end_time</strong> (<em>datetime</em><em> | </em><em>None</em>) – End time for slicing, by default None. If both start_time and end_time are provided, the dataset is sliced
@@ -140,10 +193,56 @@ accordingly before computing the mean. Otherwise, the entire time range is used.
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dataset with the same spatial dimensions (‘point’, ‘x’, ‘y’), where the ‘time’ dimension has been removed and
-each variable represents the mean value across the specified years.</p>
+each variable represents the mean value across the specified years. The error variable is only included if it
+was present in the input.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.interp_ocean_mask_to">
+<span class="sig-name descname"><span class="pre">interp_ocean_mask_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_lons</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocean_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.interp_ocean_mask_to" title="Link to this definition"></a></dt>
+<dd><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_lons</strong> (<em>np.ndarray</em>) – Target longitudes for the new grid</p></li>
+<li><p><strong>target_lats</strong> (<em>np.ndarray</em>) – Target latitudes for the new grid</p></li>
+<li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – Spatial grid masking ocean cells</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reprojected ocean mask on the target grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.interp_to_grid">
+<span class="sig-name descname"><span class="pre">interp_to_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lons_src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats_src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon2d_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat2d_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.interp_to_grid" title="Link to this definition"></a></dt>
+<dd><p>Linearly interpolate a (lon, lat) field to the target grid.</p>
+<p>Points outside the source grid become NaN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<em>np.ndarray</em>) – 2D field on the source grid, shape (nlon, nlat)</p></li>
+<li><p><strong>lons_src</strong> (<em>np.ndarray</em>) – Longitudes of the source grid in decimal degrees</p></li>
+<li><p><strong>lats_src</strong> (<em>np.ndarray</em>) – Latitudes of the source grid in decimal degrees</p></li>
+<li><p><strong>lon2d_t</strong> (<em>np.ndarray</em>) – 2D longitudes of the target grid in decimal degrees</p></li>
+<li><p><strong>lat2d_t</strong> (<em>np.ndarray</em>) – 2D latitudes of the target grid in decimal degrees</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The field interpolated onto the target grid, same shape as <code class="docutils literal notranslate"><span class="pre">lon2d_t</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,7 +267,7 @@ each variable represents the mean value across the specified years.</p>
 <dd><p>Load SELREM parameters from a JSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndot_fit, udot_fit, ndot_unc, udot_unc arrays.</p>
+<dd class="field-odd"><p>gdot_fit, udot_fit, gdot_unc, udot_unc arrays.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</p>
@@ -212,29 +311,6 @@ computes cumulative sums, calculates linear trends, and returns data ready for p
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.reproject_ocean_mask">
-<span class="sig-name descname"><span class="pre">reproject_ocean_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ocean_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_lons</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_lons</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.reproject_ocean_mask" title="Link to this definition"></a></dt>
-<dd><p>Reproject an ocean mask onto a new longitude/latitude grid using interpolation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ocean_mask</strong> (<em>np.ndarray</em>) – The original ocean mask array.</p></li>
-<li><p><strong>mask_lons</strong> (<em>np.ndarray</em>) – Longitudes of the original mask grid.</p></li>
-<li><p><strong>mask_lats</strong> (<em>np.ndarray</em>) – Latitudes of the original mask grid.</p></li>
-<li><p><strong>target_lons</strong> (<em>np.ndarray</em>) – Target longitudes for the new grid.</p></li>
-<li><p><strong>target_lats</strong> (<em>np.ndarray</em>) – Target latitudes for the new grid.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The reprojected ocean mask on the target grid.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset">
 <span class="sig-name descname"><span class="pre">slice_and_prepare_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmb_dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.slice_and_prepare_dataset" title="Link to this definition"></a></dt>
 <dd><p>Load, slice, and prepare the VMB dataset for SELREM computation.</p>
@@ -254,6 +330,23 @@ computes cumulative sums, calculates linear trends, and returns data ready for p
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If the dataset does not contain a ‘time’ dimension or if the time range is invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sea_level_response.selrem.selrem_helpers.wrap180">
+<span class="sig-name descname"><span class="pre">wrap180</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="headerlink" href="#sea_level_response.selrem.selrem_helpers.wrap180" title="Link to this definition"></a></dt>
+<dd><p>Wrap any longitude (e.g. 0-360) to [-180, 180).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lon_deg</strong> (<em>np.ndarray</em><em> | </em><em>float</em>) – Longitude in decimal degrees</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Longitude in decimal degrees wrapped to [-180, 180)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray | float</p>
 </dd>
 </dl>
 </dd></dl>
