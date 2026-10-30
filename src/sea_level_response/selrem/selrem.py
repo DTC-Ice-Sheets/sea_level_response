@@ -39,6 +39,8 @@ def run_emulator(
     gdot_unc: np.ndarray,
     udot_unc: np.ndarray,
     ocean_mask: np.ndarray,
+    mask_lons: np.ndarray,
+    mask_lats: np.ndarray,
     target_res_deg: float = 0.5,
     compute_res_deg: float = 2.0,
 ) -> dict[str, np.ndarray]:
@@ -64,7 +66,11 @@ def run_emulator(
     udot_unc : np.ndarray
         SELREM fit uncertainty for rate of vertical land motion.
     ocean_mask : np.ndarray
-        Global ocean mask, shape (nlon, nlat), 1 = ocean. Assumed lon -180..180 (no end point), lat 90..-90.
+        Global ocean mask, shape (nlon, nlat), 1 = ocean.
+    mask_lons : np.ndarray
+        Longitudes of the ocean mask grid in degrees.
+    mask_lats : np.ndarray
+        Latitudes of the ocean mask grid in degrees.
     target_res_deg : float
         Resolution of the output grid in degrees.
     compute_res_deg : float
@@ -127,7 +133,7 @@ def run_emulator(
 
     # Area weights and ocean mask on compute grid
     area_w = np.cos(np.radians(lats_c))[None, :].repeat(len(lons_c), axis=0)
-    ocean_mask_c = interp_ocean_mask_to(lons_c, lats_c, ocean_mask)
+    ocean_mask_c = interp_ocean_mask_to(lons_c, lats_c, ocean_mask, mask_lons, mask_lats)
     ocean = ocean_mask_c > 0
 
     # Uniform mass-conservation term: ocean-mean sdot must equal sle
@@ -165,7 +171,7 @@ def run_emulator(
     }
     out["lons"] = lons_t
     out["lats"] = lats_t
-    out["ocean_mask"] = interp_ocean_mask_to(lons_t, lats_t, ocean_mask)
+    out["ocean_mask"] = interp_ocean_mask_to(lons_t, lats_t, ocean_mask, mask_lons, mask_lats)
     out["gmsl"] = np.asarray(sle)
     out["c"] = np.asarray(c)
     return out
@@ -279,7 +285,7 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     """
     unit_factor = UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
-    ocean_mask, _, _ = load_ocean_mask()
+    ocean_mask, mask_lons, mask_lats = load_ocean_mask()
 
     years = np.asarray(pd.to_datetime(ds["time"].to_numpy()).year, dtype=int)
 
@@ -288,7 +294,9 @@ def compute_annual_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     uncertainty_assumed = not _has_mass_balance_uncertainty(ds)
     for i in range(len(years)):
         lat_p, lon_p, m_p, me_p = _prepare_vmb_points(ds.isel(time=i), uncertainty_assumed, scale_factor)
-        out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
+        out = run_emulator(
+            lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask, mask_lons, mask_lats
+        )
         lons_t, lats_t = out["lons"], out["lats"]
         steps.append(
             {
@@ -339,11 +347,13 @@ def compute_global_slr(ds: xr.Dataset, scale_factor: float = 1.0, output_units: 
     """
     unit_factor = UNIT_FACTORS[output_units]
     gdot_fit, udot_fit, gdot_unc, udot_unc = load_selrem_parameters()
-    ocean_mask, _, _ = load_ocean_mask()
+    ocean_mask, mask_lons, mask_lats = load_ocean_mask()
 
     uncertainty_assumed = not _has_mass_balance_uncertainty(ds)
     lat_p, lon_p, m_p, me_p = _prepare_vmb_points(ds, uncertainty_assumed, scale_factor)
-    out = run_emulator(lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask)
+    out = run_emulator(
+        lat_p, lon_p, m_p, me_p, gdot_fit, udot_fit, gdot_unc, udot_unc, ocean_mask, mask_lons, mask_lats
+    )
 
     lons_t, lats_t = out["lons"], out["lats"]
     ocean_t = out["ocean_mask"].astype(np.float64)

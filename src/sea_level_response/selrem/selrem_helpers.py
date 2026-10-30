@@ -58,7 +58,13 @@ def build_lonlat(
     return lons, lats, lon2d, lat2d
 
 
-def interp_ocean_mask_to(target_lons: np.ndarray, target_lats: np.ndarray, ocean_mask: np.ndarray) -> np.ndarray:
+def interp_ocean_mask_to(
+    target_lons: np.ndarray,
+    target_lats: np.ndarray,
+    ocean_mask: np.ndarray,
+    mask_lons: np.ndarray,
+    mask_lats: np.ndarray,
+) -> np.ndarray:
     """
     Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
 
@@ -69,17 +75,17 @@ def interp_ocean_mask_to(target_lons: np.ndarray, target_lats: np.ndarray, ocean
     target_lats : np.ndarray
         Target latitudes for the new grid
     ocean_mask : np.ndarray
-        Spatial grid masking ocean cells
+        Spatial grid masking ocean cells, shape (nlon, nlat)
+    mask_lons : np.ndarray
+        Longitudes of the ocean mask grid in decimal degrees
+    mask_lats : np.ndarray
+        Latitudes of the ocean mask grid in decimal degrees
 
     Returns
     -------
     np.ndarray
         The reprojected ocean mask on the target grid.
     """
-    nlon_m, nlat_m = ocean_mask.shape
-    mask_lons = np.linspace(-180, 180, nlon_m, endpoint=False)
-    mask_lats = np.linspace(90, -90, nlat_m)
-
     itp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
     lon2d_t, lat2d_t = np.meshgrid(target_lons, target_lats, indexing="ij")
     pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
