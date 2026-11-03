@@ -1,8 +1,8 @@
 {
   "attributes": {
-    "gmsl_ndot": 0.026869986123760785,
-    "gmsl_udot": -0.0020042175443733593,
-    "gmsl_sdot": 0.028874203668134146,
+    "gmsl_ndot": 0.026927970386589267,
+    "gmsl_udot": -0.0019913777594885947,
+    "gmsl_sdot": 0.02891934814607786,
     "units": "mm",
     "mass_balance_uncertainty_assumed": 0
   },

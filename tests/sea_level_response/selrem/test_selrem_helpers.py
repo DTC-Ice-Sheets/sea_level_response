@@ -142,13 +142,13 @@ def test_preprocess_location_with_realistic_annual_slr(realistic_annual_slr_data
 
 def test_interp_ocean_mask_to_realistic(realistic_ocean_mask: tuple) -> None:
     """Test interp_ocean_mask_to with realistic ocean mask."""
-    ocean_mask, _mask_lons, _mask_lats = realistic_ocean_mask
+    ocean_mask, mask_lons, mask_lats = realistic_ocean_mask
 
     # Reproject to finer grid
     target_lons = np.linspace(-180, 179, 72)
     target_lats = np.linspace(-90, 89, 36)
 
-    reprojected = interp_ocean_mask_to(target_lons, target_lats, ocean_mask)
+    reprojected = interp_ocean_mask_to(target_lons, target_lats, ocean_mask, mask_lons, mask_lats)
 
     # Verify shape (should be nx, ny to match lon, lat)
     assert reprojected.shape == (72, 36)
