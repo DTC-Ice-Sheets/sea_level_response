@@ -145,27 +145,27 @@ def run_emulator(
 
     sig_ndot_c = sig_gdot_c.copy()
 
-    # Mask land on compute grid
-    def _mask(field: np.ndarray) -> np.ndarray:
-        return np.where(ocean, field, np.nan)
-
     fields_c = {
-        "ndot": _mask(ndot_c),
-        "udot": _mask(udot_c),
-        "sdot": _mask(sdot_c),
-        "rot": _mask(rot_c),
-        "sig_ndot": _mask(sig_ndot_c),
-        "sig_udot": _mask(sig_udot_c),
-        "sig_sdot": _mask(sig_sdot_c),
+        "ndot": ndot_c,
+        "udot": udot_c,
+        "sdot": sdot_c,
+        "rot": rot_c,
+        "sig_ndot": sig_ndot_c,
+        "sig_udot": sig_udot_c,
+        "sig_sdot": sig_sdot_c,
     }
 
-    # Compute grid -> target grid
+    # Compute grid -> target grid, then mask land on the target grid. Masking before interpolating would turn every
+    # target cell next to a coarse land node into NaN, eroding the coastline by roughly one compute-grid cell.
+    ocean_mask_t = interp_ocean_mask_to(lons_t, lats_t, ocean_mask)
+    ocean_t = ocean_mask_t > 0
     out: dict[str, np.ndarray] = {
-        name: interp_to_grid(field, lons_c, lats_c, lon2d_t, lat2d_t) for name, field in fields_c.items()
+        name: np.where(ocean_t, interp_to_grid(field, lons_c, lats_c, lon2d_t, lat2d_t), np.nan)
+        for name, field in fields_c.items()
     }
     out["lons"] = lons_t
     out["lats"] = lats_t
-    out["ocean_mask"] = interp_ocean_mask_to(lons_t, lats_t, ocean_mask)
+    out["ocean_mask"] = ocean_mask_t
     out["gmsl"] = np.asarray(sle)
     out["c"] = np.asarray(c)
     return out
