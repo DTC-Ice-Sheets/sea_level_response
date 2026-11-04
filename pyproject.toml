@@ -39,6 +39,9 @@ sphinx-copybutton = "^0.5.2"
 commitizen = "^4.19.2"
 pydoclint = "^0.8.3"
 
+[tool.poetry.group.deployment]
+optional = true
+
 [tool.poetry.group.deployment.dependencies]
 dtc-wrapper = { git = "https://github.com/DTC-Ice-Sheets/dtc_wrapper.git", tag = "0.0.40" }
 
