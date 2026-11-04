@@ -64,3 +64,7 @@ def test_integrated_global_slr(input_filename: str, expected_output_filename: st
     )
     expected_output = xr.open_dataset(test_inputs_dir / expected_output_filename, engine="zarr")
     xr.testing.assert_allclose(output_subset_ds, expected_output, rtol=1e-5, atol=1e-8)
+
+    # assert_allclose ignores attrs, so check the ocean-mean values explicitly.
+    for key in ["gmsl_sdot", "gmsl_ndot", "gmsl_udot"]:
+        assert output_global_slr.attrs[key] == pytest.approx(expected_output.attrs[key], rel=1e-5)
