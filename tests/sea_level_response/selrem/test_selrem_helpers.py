@@ -90,6 +90,37 @@ def test_interp_to_grid() -> None:
     assert np.isnan(result[:, 1]).all()
 
 
+def test_interp_to_grid_with_duplicated_end_point() -> None:
+    """Test that a source grid which already includes the wrap-around longitude (-180 and 180) is not padded again."""
+    # Same field as test_interp_to_grid, but with 180 explicitly included (same meridian as -180, so same value 0)
+    lons_src = np.array([-180.0, -90.0, 0.0, 90.0, 180.0])
+    lats_src = np.array([10.0, 0.0])
+    field = np.array([[0.0, 0.0], [10.0, 10.0], [20.0, 20.0], [30.0, 30.0], [0.0, 0.0]])
+
+    lon2d_t, lat2d_t = np.meshgrid(np.array([45.0, 135.0, 180.0, 540.0]), np.array([5.0]), indexing="ij")
+    result = interp_to_grid(field, lons_src, lats_src, lon2d_t, lat2d_t)
+
+    np.testing.assert_allclose(result[:, 0], [25.0, 15.0, 0.0, 0.0])
+
+
+@pytest.mark.parametrize(
+    "lons_src",
+    [
+        np.array([0.0, 10.0]),  # regional grid
+        np.array([-180.0, -90.0, 90.0]),  # uneven spacing
+        np.array([90.0, 0.0, -90.0, -180.0]),  # descending
+    ],
+)
+def test_interp_to_grid_rejects_non_global_longitudes(lons_src: np.ndarray) -> None:
+    """Test that longitudes which cannot be treated as periodic raise instead of interpolating across a gap."""
+    lats_src = np.array([10.0, 0.0])
+    field = np.zeros((lons_src.size, lats_src.size))
+    lon2d_t, lat2d_t = np.meshgrid(np.array([5.0]), np.array([5.0]), indexing="ij")
+
+    with pytest.raises(ValueError, match="Source longitudes must"):
+        interp_to_grid(field, lons_src, lats_src, lon2d_t, lat2d_t)
+
+
 def test_slice_and_prepare_dataset_with_realistic_data(tmp_path: Path, small_vmb_dataset: xr.Dataset) -> None:
     """Test slice_and_prepare_dataset with realistic VMB data."""
     # Save to temporary zarr

@@ -64,14 +64,15 @@ def _periodic_lon_interpolator(
     """
     Build a (lon, lat) interpolator that treats longitude as periodic.
 
-    The source grid is assumed to cover 360 degrees without a duplicated end point (e.g. -180 .. 180 - res). The first
-    longitude column is appended again at +360 degrees so that targets between the last source longitude and the
-    wrap-around point are interpolated instead of falling outside the grid.
+    The source grid is assumed to cover the full globe. If it has no duplicated end point (e.g. -180 .. 180 - res), the
+    first longitude column is appended again at +360 degrees so that targets between the last source longitude and the
+    wrap-around point are interpolated instead of falling outside the grid. If the last longitude already equals the
+    first + 360 (e.g. -180 .. 180), the grid is already cyclic and is used as is.
 
     Parameters
     ----------
     lons_src : np.ndarray
-        Ascending source longitudes in decimal degrees, spanning less than 360 degrees.
+        Ascending source longitudes in decimal degrees, spanning at most 360 degrees.
     lats_src : np.ndarray
         Source latitudes in decimal degrees.
     field : np.ndarray
@@ -82,8 +83,26 @@ def _periodic_lon_interpolator(
     Returns
     -------
     RegularGridInterpolator
-        Interpolator over the longitude-padded grid; query it with longitudes wrapped via ``_wrap_to``.
+        Interpolator over the cyclic grid; query it with longitudes wrapped via ``_wrap_to``.
+
+    Raises
+    ------
+    ValueError
+        If the longitudes are not ascending and evenly spaced, or do not cover the full globe (e.g. a regional grid),
+        in which case wrapping around would interpolate across a huge gap.
     """
+    spacing = np.diff(lons_src)
+    if lons_src.size < 2 or not np.all(spacing > 0) or not np.allclose(spacing, spacing[0]):
+        raise ValueError("Source longitudes must be ascending and evenly spaced.")
+    span = lons_src[-1] - lons_src[0]
+    if not (np.isclose(span, 360.0) or np.isclose(span + spacing[0], 360.0)):
+        raise ValueError(
+            f"Source longitudes must cover the full globe to be treated as periodic, but span {lons_src[0]} to "
+            f"{lons_src[-1]} with spacing {spacing[0]}."
+        )
+    if np.isclose(lons_src[-1], lons_src[0] + 360.0):
+        # End point already duplicated: the grid is cyclic as it is.
+        return RegularGridInterpolator((lons_src, lats_src), field, bounds_error=False, fill_value=fill_value)
     lons_pad = np.append(lons_src, lons_src[0] + 360.0)
     field_pad = np.concatenate([field, field[:1]], axis=0)
     return RegularGridInterpolator((lons_pad, lats_src), field_pad, bounds_error=False, fill_value=fill_value)
