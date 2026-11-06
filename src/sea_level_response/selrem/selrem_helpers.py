@@ -58,6 +58,56 @@ def build_lonlat(
     return lons, lats, lon2d, lat2d
 
 
+def _periodic_lon_interpolator(
+    lons_src: np.ndarray, lats_src: np.ndarray, field: np.ndarray, fill_value: float
+) -> RegularGridInterpolator:
+    """
+    Build a (lon, lat) interpolator that treats longitude as periodic.
+
+    The source grid is assumed to cover 360 degrees without a duplicated end point (e.g. -180 .. 180 - res). The first
+    longitude column is appended again at +360 degrees so that targets between the last source longitude and the
+    wrap-around point are interpolated instead of falling outside the grid.
+
+    Parameters
+    ----------
+    lons_src : np.ndarray
+        Ascending source longitudes in decimal degrees, spanning less than 360 degrees.
+    lats_src : np.ndarray
+        Source latitudes in decimal degrees.
+    field : np.ndarray
+        2D field on the source grid, shape (nlon, nlat).
+    fill_value : float
+        Value for points outside the source grid (only possible in latitude).
+
+    Returns
+    -------
+    RegularGridInterpolator
+        Interpolator over the longitude-padded grid; query it with longitudes wrapped via ``_wrap_to``.
+    """
+    lons_pad = np.append(lons_src, lons_src[0] + 360.0)
+    field_pad = np.concatenate([field, field[:1]], axis=0)
+    return RegularGridInterpolator((lons_pad, lats_src), field_pad, bounds_error=False, fill_value=fill_value)
+
+
+def _wrap_to(lon_deg: np.ndarray, lon_start: float) -> np.ndarray:
+    """
+    Wrap longitudes into [lon_start, lon_start + 360).
+
+    Parameters
+    ----------
+    lon_deg : np.ndarray
+        Longitudes in decimal degrees.
+    lon_start : float
+        Start of the target longitude range in decimal degrees.
+
+    Returns
+    -------
+    np.ndarray
+        Wrapped longitudes in decimal degrees.
+    """
+    return (lon_deg - lon_start) % 360.0 + lon_start
+
+
 def interp_ocean_mask_to(target_lons: np.ndarray, target_lats: np.ndarray, ocean_mask: np.ndarray) -> np.ndarray:
     """
     Reproject an ocean mask onto a new longitude/latitude grid using interpolation.
@@ -80,9 +130,9 @@ def interp_ocean_mask_to(target_lons: np.ndarray, target_lats: np.ndarray, ocean
     mask_lons = np.linspace(-180, 180, nlon_m, endpoint=False)
     mask_lats = np.linspace(90, -90, nlat_m)
 
-    itp = RegularGridInterpolator((mask_lons, mask_lats), ocean_mask, bounds_error=False, fill_value=0)
+    itp = _periodic_lon_interpolator(mask_lons, mask_lats, ocean_mask, fill_value=0)
     lon2d_t, lat2d_t = np.meshgrid(target_lons, target_lats, indexing="ij")
-    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
+    pts = np.stack([_wrap_to(lon2d_t.ravel(), mask_lons[0]), lat2d_t.ravel()], axis=-1)
     m = itp(pts).reshape(lon2d_t.shape)
     return (m > 0.5).astype(np.int8)
 
@@ -97,7 +147,8 @@ def interp_to_grid(
     """
     Linearly interpolate a (lon, lat) field to the target grid.
 
-    Points outside the source grid become NaN.
+    Longitude is treated as periodic: ``lons_src`` must be ascending and cover 360 degrees without a duplicated end
+    point. Points outside the source latitude range become NaN.
 
     Parameters
     ----------
@@ -117,8 +168,8 @@ def interp_to_grid(
     np.ndarray
         The field interpolated onto the target grid, same shape as ``lon2d_t``.
     """
-    itp = RegularGridInterpolator((lons_src, lats_src), field, bounds_error=False, fill_value=np.nan)
-    pts = np.stack([lon2d_t.ravel(), lat2d_t.ravel()], axis=-1)
+    itp = _periodic_lon_interpolator(lons_src, lats_src, field, fill_value=np.nan)
+    pts = np.stack([_wrap_to(lon2d_t.ravel(), lons_src[0]), lat2d_t.ravel()], axis=-1)
     return itp(pts).reshape(lon2d_t.shape)
 
 

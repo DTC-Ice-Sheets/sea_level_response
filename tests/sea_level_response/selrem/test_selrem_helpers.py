@@ -73,17 +73,21 @@ def test_build_lonlat() -> None:
 
 
 def test_interp_to_grid() -> None:
-    """Test interpolation to a target grid, with NaN outside the source grid."""
-    lons_src = np.array([0.0, 10.0])
-    lats_src = np.array([0.0, 10.0])
-    field = np.array([[0.0, 0.0], [10.0, 10.0]])
+    """Test interpolation to a target grid: periodic in longitude, NaN outside the source latitudes."""
+    # at source, -180 long has value 0, -90 has 10, 0 has 20, 90 has 30
+    lons_src = np.array([-180.0, -90.0, 0.0, 90.0])
+    lats_src = np.array([10.0, 0.0])
+    field = np.array([[0.0, 0.0], [10.0, 10.0], [20.0, 20.0], [30.0, 30.0]])
 
-    lon2d_t, lat2d_t = np.meshgrid(np.array([5.0, 20.0]), np.array([5.0]), indexing="ij")
+    # 45 is midway between lon 0 (value 20) and lon 90 (value 30), should be 25. 135 is midway between lon 90 (val 30)
+    # and the wrap-around lon 180 (val 0), should be 15. 180 is the same as -180, should be 0; 540 is also the same as
+    # -180, so also 0
+    lon2d_t, lat2d_t = np.meshgrid(np.array([45.0, 135.0, 180.0, 540.0]), np.array([5.0, 20.0]), indexing="ij")
     result = interp_to_grid(field, lons_src, lats_src, lon2d_t, lat2d_t)
 
-    assert result.shape == (2, 1)
-    assert result[0, 0] == pytest.approx(5.0)
-    assert np.isnan(result[1, 0])
+    assert result.shape == (4, 2)
+    np.testing.assert_allclose(result[:, 0], [25.0, 15.0, 0.0, 0.0])
+    assert np.isnan(result[:, 1]).all()
 
 
 def test_slice_and_prepare_dataset_with_realistic_data(tmp_path: Path, small_vmb_dataset: xr.Dataset) -> None:
